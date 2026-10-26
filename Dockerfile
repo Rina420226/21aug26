@@ -5,7 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg libjpeg62-turbo libffi8 openssl ca-certificates \
+    git ffmpeg libjpeg62-turbo libffi8 openssl ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
