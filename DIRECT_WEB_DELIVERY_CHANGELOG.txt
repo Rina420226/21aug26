@@ -1,0 +1,17 @@
+Lucy3 patch: remove user-facing Telegram media delivery from movie/file retrieval workflows.
+
+Changed:
+- /start BATCH links now show file metadata and a Download/Watch callback instead of sending each media file into the user's Telegram chat.
+- /start DSTORE media entries now show Download/Watch links; non-media text messages remain copied as before.
+- /start all-files, indexed single-file, and fallback single-file paths now show Download/Watch links instead of sending media into the user's chat.
+- Search-result fallback paths in plugins/pmfilter.py now show a Download/Watch callback rather than sending the media file into the group.
+- The non-shortlink branch of utils.py's multi-file delivery now shows Download/Watch links.
+
+Intentionally retained:
+- Internal send_cached_media to LOG_CHANNEL is still required by the streaming backend to create a server-accessible Telegram message reference.
+- Admin broadcast/copy functions, indexing, database, verification, and unrelated media features were not globally removed.
+- The /stream command's internal LOG_CHANNEL staging remains in place.
+
+Validation performed:
+- Python AST syntax parse passed for all Python files in the archive.
+- Live Telegram/Koyeb end-to-end tests were not run in this environment.

@@ -1,0 +1,54 @@
+# Lucy Bot — refreshed dependency set (2026)
+# Python: 3.10+
+
+# Core runtime
+aiofiles==25.1.0
+aiohttp==3.14.3
+beautifulsoup4
+dnspython==2.8.0
+jinja2==3.1.6
+marshmallow==4.3.1
+motor==3.7.1
+numpy
+Pillow==12.3.0
+psutil==7.2.2
+pymongo[srv]==4.18.1
+python-dotenv==1.2.3
+pytz
+requests==2.34.2
+shortzy
+pyromod
+tgcrypto
+ujson
+umongo==4.0.0
+humanize
+
+# Scheduling
+APScheduler==3.11.3
+
+# Telegram
+pyrofork==2.3.69
+
+# Media / image helpers
+opencv-python-headless==5.0.0.93
+qrcode
+gtts==2.5.4
+
+# Instagram
+instaloader==4.15.3
+
+# Fuzzy matching
+# Replaced legacy fuzzywuzzy + python-Levenshtein with RapidFuzz.
+rapidfuzz==3.14.6
+
+# AI / text helpers used by optional modules
+lexica-api
+MukeshAPI
+textblob
+langdetect
+
+# Movie metadata
+git+https://github.com/Joelkb/cinemagoer
+
+# Other
+telegraph==2.2.0
