@@ -1,210 +1,191 @@
-━━━━━━━━━━━━━━━━━━━━
+<h1 align="center">
+ <a href="https://youtu.be/hLBqGx0LhO8" target="/blank">Auto-Filter-Bot</a>
+</h1>
 
-<h2 align="center">
-    ──「 ʟᴜᴄʏ ✘ ʀᴏʙᴏᴛ 」──
-</h2>
-
-<p align="center">
-  <img src="">
-</p>
-
-_**ᴀᴠᴀɪʟᴀʙʟᴇ ᴏɴ ᴛᴇʟᴇɢʀᴀᴍ ᴀs [ʟᴜᴄʏ ʀᴏʙᴏᴛ](https://t.me/lucy_filter_bot)**_
-
-<p align="center">
-<b>𝗗𝗘𝗣𝗟𝗢𝗬𝗠𝗘𝗡𝗧 𝗠𝗘𝗧𝗛𝗢𝗗𝗦</b>
-</p>
-
-<h3 align="center">
-    ─「 ᴅᴇᴩʟᴏʏ ᴏɴ ʜᴇʀᴏᴋᴜ 」─
-</h3>
-
-<p align="center"><a href="https://dashboard.heroku.com/new?template=https://github.com/Codeflix-Bots/l"> <img src="https://img.shields.io/badge/Deploy%20On%20Heroku-black?style=for-the-badge&logo=heroku" width="220" height="38.45"/></a></p>
+<p align="center">🩷 Thanks for Being Here 🩷</p>
 
 
-<h3 align="center">
-    ─「 ᴅᴇᴩʟᴏʏ ᴏɴ ᴠᴘs/ʟᴏᴄᴀʟ 」─
-</h3>
+## 🥰 Features
 
-<details><summary><b> - ғᴇᴀᴛᴜʀᴇs :</b></summary>
-  
-## features
-- [x] 𝑺𝒉𝒐𝒓𝒕𝒏𝒆𝒓 𝑺𝒖𝒑𝒑𝒐𝒓𝒕 𝒊𝒏 𝑺𝒕𝒓𝒆𝒂𝒎 𝒂𝒏𝒅 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅 𝒇𝒆𝒂𝒕𝒖𝒓𝒆
-- [x] 𝑮𝒐𝒐𝒅 𝑴𝒐𝒓𝒏𝒊𝒏𝒈, 𝑨𝒇𝒕𝒆𝒓𝒏𝒐𝒐𝒏, 𝑬𝒗𝒆𝒏𝒊𝒏𝒈, 𝑵𝒊𝒈𝒉𝒕 𝒘𝒊𝒔𝒉𝒆𝒔 
-- [x] 𝑴𝒖𝒍𝒕𝒊 𝑭𝒔𝒖𝒃 𝑺𝒖𝒑𝒑𝒐𝒓𝒕
-- [x] 𝑹𝒆𝒒𝒖𝒆𝒔𝒕 𝒕𝒐 𝒋𝒐𝒊𝒏 𝒊𝒏 𝑭𝒔𝒖𝒃
-- [x] 𝑩𝒆𝒔𝒕 𝑺𝒕𝒓𝒆𝒂𝒎𝒊𝒏𝒈 𝑾𝒆𝒃𝒔𝒊𝒕𝒆
-- [x] 𝑷𝒓𝒆𝒎𝒊𝒖𝒎 𝒎𝒆𝒎𝒃𝒆𝒓𝒔𝒉𝒊𝒑 𝒎𝒂𝒏𝒂𝒈𝒆𝒎𝒆𝒏𝒕 
-- [x] 𝐶𝑢𝑠𝑡𝑜𝑚 𝑆ℎ𝑜𝑟𝑡𝑛𝑒𝑟 ( 𝐴𝑙𝑙 𝑊𝑒𝑏𝑠𝑖𝑡𝑒𝑠 )
-- [x] 𝑆𝑡𝑟𝑒𝑎𝑚 𝑜𝑛𝑙𝑖𝑛𝑒 𝑎𝑛𝑑 𝐹𝑎𝑠𝑡 𝐷𝑜𝑤𝑛𝑙𝑜𝑎𝑑
-- [x] 𝐼𝑀𝐷𝐵 𝑇𝑒𝑚𝑝𝑙𝑎𝑡𝑒 𝑆𝑒𝑡
-- [x] 𝐼𝑛𝑑𝑒𝑥𝑒𝑠 𝐹𝑖𝑙𝑒𝑠 𝑎𝑏𝑜𝑣𝑒 2𝐺𝐵
-- [x] 𝑃𝑟𝑒𝐷𝑉𝐷 𝑎𝑛𝑑 𝐶𝑎𝑚𝑅𝑖𝑝 𝐷𝑒𝑙𝑒𝑡𝑒 𝑀𝑜𝑑𝑒
-- [x] 𝑀𝑢𝑙𝑡𝑖𝑝𝑙𝑒 𝐹𝑖𝑙𝑒 𝐷𝑒𝑙𝑒𝑡𝑖𝑜𝑛
-- [x] 𝑆𝑒𝑡𝑡𝑖𝑛𝑔𝑠 𝑀𝑒𝑛𝑢
-- [x] 𝐹𝑜𝑟𝑐𝑒 𝑆𝑢𝑏𝑠𝑐𝑟𝑖𝑝𝑡𝑖𝑜𝑛
-- [x] 𝑊𝑒𝑙𝑐𝑜𝑚𝑒 𝑀𝑒𝑠𝑠𝑎𝑔𝑒
-- [x] 𝐴𝑢𝑡𝑜𝑚𝑎𝑡𝑖𝑐 𝐹𝑖𝑙𝑒 𝐹𝑖𝑙𝑡𝑒𝑟𝑖𝑛𝑔
-- [x] 𝐷𝑜𝑢𝑏𝑙𝑒 𝐹𝑖𝑙𝑡𝑒𝑟 𝐵𝑢𝑡𝑡𝑜𝑛
-- [x] 𝑆𝑖𝑛𝑔𝑙𝑒 𝐹𝑖𝑙𝑡𝑒𝑟 𝐵𝑢𝑡𝑡𝑜𝑛
-- [x] 𝐵𝑜𝑡 𝑃𝑀 𝐹𝑖𝑙𝑒 𝑆𝑒𝑛𝑑 𝑀𝑜𝑑𝑒
-- [x] 𝐴𝑢𝑡𝑜 𝐹𝑖𝑙𝑒 𝑆𝑒𝑛𝑑
-- [x] 𝐹𝑜𝑟𝑤𝑎𝑟𝑑 𝑅𝑒𝑠𝑡𝑟𝑖𝑐𝑡𝑖𝑜𝑛
-- [x] 𝐹𝑖𝑙𝑒 𝑃𝑟𝑜𝑡𝑒𝑐𝑡
-- [x] 𝑀𝑎𝑛𝑢𝑎𝑙 𝐹𝑖𝑙𝑒 𝐹𝑖𝑙𝑡𝑒𝑟𝑖𝑛𝑔
-- [x] 𝐺𝑙𝑜𝑏𝑎𝑙 𝐹𝑖𝑙𝑒 𝐹𝑖𝑙𝑡𝑒𝑟𝑖𝑛𝑔
-- [x] 𝐼𝑀𝐷𝐵
-- [x] 𝐴𝑑𝑚𝑖𝑛 𝐶𝑜𝑚𝑚𝑎𝑛𝑑𝑠
-- [x] 𝑈𝑠𝑒𝑟 𝐵𝑟𝑜𝑎𝑑𝑐𝑎𝑠𝑡
-- [x] 𝐺𝑟𝑜𝑢𝑝 𝐵𝑟𝑜𝑎𝑑𝑐𝑎𝑠𝑡
-- [x] 𝐼𝑛𝑑𝑒𝑥
-- [x] 𝐼𝑀𝐷𝐵 𝑠𝑒𝑎𝑟𝑐ℎ
-- [x] 𝐼𝑛𝑙𝑖𝑛𝑒 𝑆𝑒𝑎𝑟𝑐ℎ
-- [x] 𝑅𝑎𝑛𝑑𝑜𝑚 𝑝𝑖𝑐𝑠
-- [x] 𝑖𝑑𝑠 𝑎𝑛𝑑 𝑈𝑠𝑒𝑟 𝑖𝑛𝑓𝑜 
-- [x] 𝑆𝑡𝑎𝑡𝑠
-- [x] 𝑈𝑠𝑒𝑟𝑠
-- [x] 𝐶ℎ𝑎𝑡𝑠
-- [x] 𝑈𝑠𝑒𝑟 𝐵𝑎𝑛
-- [x] 𝑈𝑠𝑒𝑟 𝑈𝑛𝑏𝑎𝑛
-- [x] 𝐶ℎ𝑎𝑡 𝐿𝑒𝑎𝑣𝑒
-- [x] 𝐶ℎ𝑎𝑡 𝐷𝑖𝑠𝑎𝑏𝑙𝑒
-- [x] Ai.𝑆𝑝𝑒𝑙𝑙𝑖𝑛𝑔 𝐶ℎ𝑒𝑐𝑘 𝐹𝑒𝑎𝑡𝑢𝑟𝑒
-- [x] 𝐹𝑖𝑙𝑒 𝑆𝑡𝑜𝑟𝑒
-- [x] 𝐴𝑢𝑡𝑜 𝐷𝑒𝑙𝑒𝑡𝑒
-- [x] Refer future
-- [x] Redeem Code Future
-- [x] Top Trending future
-- [x] Most Search
-- [x] 𝐴𝑛𝑑 𝑀𝑜𝑟𝑒...
+- ✅ Dual database support
+- ✅ Stream Mode Toggle
+- ✅ 3-Step User Verification
+- ✅ Custom Verification Time
+- ✅ 3 Tutorial Support for Verification
+- ✅ Multi FSub (Admin & Group Support)
+- ✅ Connect Multiple Channels
+- ✅ Request to Join via FSub (Admins Only)
+- ✅ Verification On/Off Feature
+- ✅ Verified User Counter
+- ✅ Verified User Database Save
+- ✅ Premium Membership Management
+- ✅ Refer & Earn Premium  
+- ✅ No Shortlinks for Premium Users
+- ✅ Star Payment Feature
+- ✅ File Limit & Quality for Free Users
+- ✅ Stream/Download Features for Premium Users
+- ✅ Best Streaming Website Integration
+- ✅ Online Streaming & Fast Download
+- ✅ File Indexing Above 2GB
+- ✅ Full File Indexing Support
+- ✅ Auto File Filtering
+- ✅ Single Filter Button
+- ✅ Auto File Send
+- ✅ Maintenance Mode
+- ✅ Bot PM File Send Mode
+- ✅ Forward Restriction
+- ✅ File Protection (On/Off)
+- ✅ PreDVD & CamRip Auto Deletion
+- ✅ Auto Delete Old Files
+- ✅ Multiple File Deletion
+- ✅ Delete Files by Name
+- ✅ Delete All Files from Database
+- ✅ Channel for File Deletion Logs
+- ✅ Advanced AI Spell Check
+- ✅ Trending Titles
+- ✅ Top Searching
+- ✅ Stats & Analytics
+- ✅ ID & User Info
+- ✅ User Ban/Unban
+- ✅ Chat Leave/Disable
+- ✅ Settings Menu
+- ✅ Welcome Message
+- ✅ PM Search On/Off
+- ✅ Broadcast & Group Broadcast
+- ✅ Superfast Broadcast
+- ✅ Metadata Extraction Feature
+- ✅ Custom IMDb Template
+- ✅ Custom Caption, Shortener, Log Channel
+- ✅ Custom Cover Support
+- ✅ Custom Landscape/Portrait Posters
+- ✅ Auto Post in Update Channel
+- ✅ Custom Anime, Movies & Series Posts
+- ✅ Web-App Feature
+- ✅ Language Feature
+- ✅ Fast Mode
+- ✅ Fully Customizable Repository
+- ✅ Fully Modified Repo
+- ✅ Deploy to Koyeb + Heroku + Railway   
+- ✅ And many more...
 
-and more....
+📌 *To stay updated with all new features, join our [Updates Channel](https://t.me/TechifyBots).*
 
-## ᴀᴅᴍɪɴ ᴀɴᴅ ᴜsᴇʀs ᴄᴏᴍᴍᴀɴᴅs
-- [x] start - ꜱᴛᴀʀᴛ ᴍᴇ...
-- [x] connect - ᴄᴏɴɴᴇᴄᴛ ʏᴏᴜʀ ɢʀᴏᴜᴘ ɪɴ ᴘᴍ...
-- [x] shortlink - ᴄᴏɴɴᴇᴄᴛ ʏᴏᴜʀ ꜱʜᴏʀᴛɴᴇʀ ᴡᴇʙꜱɪᴛᴇ...
-- [x] set_tutorial - ꜱᴇᴛ ʏᴏᴜʀ ʜᴏᴡ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ ᴠɪᴅ...
-- [x] remove_tutorial - ʀᴇᴍᴏᴠᴇ ʏᴏᴜʀ ʜᴏᴡ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ ᴠɪᴅ...
-- [x] settings - ᴄʜᴀɴɢᴇ ʙᴏᴛ ꜱᴇᴛᴛɪɴɢꜱ...
-- [x] disconnect - ᴅɪꜱᴄᴏɴɴᴇᴄᴛ ʏᴏᴜʀ ɢʀᴏᴜᴘ...
-- [x] connections - ʏᴏᴜʀ ᴄᴏɴɴᴇᴄᴛᴇᴅ ɢʀᴏᴜᴘꜱ...
-- [x] plan - ᴄʜᴇᴄᴋ ᴀᴠᴀɪʟᴀʙʟᴇ ᴘʀᴇᴍɪᴜᴍ ᴍᴇᴍʙᴇʀꜱʜɪᴘ ᴘʟᴀɴꜱ...
-- [x] myplan - ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴄᴜʀʀᴜɴᴛ ᴘʟᴀɴ...
-- [x] stats - ᴄʜᴇᴄᴋ ᴍʏ ᴅᴀᴛᴀʙᴀꜱᴇ...
-- [x] info - ɢᴇᴛ ᴜꜱᴇʀ ɪɴꜰᴏ...
-- [x] id - ɢᴇᴛ ᴛᴇʟᴇɢʀᴀᴍ ɪᴅ...
-- [x] shortlink_info - ɢᴇᴛ ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ꜱʜᴏʀᴛʟɪɴᴋ ɪɴꜰᴏ...
-- [x] shorlinkon - ᴏɴ ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ꜱʜᴏʀᴛʟɪɴᴋ ꜰʀᴏᴍ ɢʀᴘ...
-- [x] shortlinkoff - ᴏꜰꜰ ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ꜱʜᴏʀᴛʟɪɴᴋ ꜰʀᴏᴍ ɢʀᴘ...
-- [x] link - ᴄʀᴇᴀᴛᴇ ʟɪɴᴋ ꜰᴏʀ ᴏɴᴇ ᴘᴏꜱᴛ...
-- [x] batch - ᴄʀᴇᴀᴛᴇ ʟɪɴᴋ ꜰᴏʀ ʙᴜʟᴋ ᴘᴏꜱᴛꜱ...
-- [x] deleteall - ᴅᴇʟᴇᴛᴇ ᴀʟʟ ꜰɪʟᴇꜱ ꜰʀᴏᴍ ᴅʙ...
-- [x] delete - ᴅᴇʟᴇᴛᴇ ꜱᴘᴇᴄɪꜰɪᴄ ꜰɪʟᴇ ꜰʀᴏᴍ ᴅʙ...
-- [x] deletefiles - ᴅᴇʟᴇᴛᴇ ᴘʀᴇᴅᴠᴅ ᴀɴᴅ ᴄᴀᴍʀɪᴘ ꜰɪʟᴇꜱ...
-- [x] broadcast - ʙʀᴏᴀᴅᴄᴀꜱᴛ ᴍᴇꜱꜱᴀɢᴇ ᴛᴏ ᴜꜱᴇʀꜱ...
-- [x] grp_broadcast - ʙʀᴏᴀᴅᴄᴀꜱᴛ ᴍᴇꜱꜱᴀɢᴇꜱ ᴛᴏ ɢʀᴏᴜᴘꜱ...
-- [x] enable - ᴇɴᴀʙʟᴇ ᴛᴏ ᴊᴏɪɴ ɪɴ ɢʀᴏᴜᴘ...
-- [x] disable - ᴅɪꜱᴀʙʟᴇ ᴀɴʏ ɢʀᴏᴜᴘ...
-- [x] leave - ʟᴇᴀᴠᴇ ꜰʀᴏᴍ ᴀɴʏ ɢʀᴏᴜᴘ...
-- [x] ban - ʙᴀɴ ᴜꜱᴇʀ ᴛᴏ ᴜꜱᴇ ʙᴏᴛ...
-- [x] unban - ᴜɴʙᴀɴ ᴜꜱᴇʀ ᴛᴏ ᴜꜱᴇ ʙᴏᴛ...
-- [x] add_redeem - to create redeem code
-- [x] add_premium - ᴀᴅᴅ ᴀɴʏ ᴜꜱᴇʀ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ...
-- [x] remove_premium - ʀᴇᴍᴏᴠᴇ ᴀɴʏ ᴜꜱᴇʀ ꜰʀᴏᴍ ᴘʀᴇᴍɪᴜᴍ...
-- [x] premium_users - ɢᴇᴛ ʟɪꜱᴛ ᴏꜰ ᴘʀᴇᴍɪᴜᴍ ᴜꜱᴇʀꜱ...
-- [x] restart - ʀᴇꜱᴛᴀʀᴛ ᴛʜᴇ ʙᴏᴛ...
-- [x]  ᴜsᴇʀs - ᴛᴏ ᴠɪᴇᴡ ᴏғ ʟɪsᴛᴏғ ᴜsᴇʀs, ᴜsɪɴɢ ʙᴏᴛ [ғᴏʀ ᴀᴅᴍɪɴs ᴜsᴇ ᴏɴʟʏ]
-- [x]  ʙʀᴏᴀᴅᴄᴀsᴛ - ᴍᴇssᴀɢᴇ ʙʀᴏᴀᴅᴄᴀsᴛ ᴄᴏᴍᴍᴀɴᴅ [ғᴏʀ ᴀᴅᴍɪɴs ᴜsᴇ ᴏɴʟʏ]
-- [x]  ʙᴀɴ - ʟᴇᴛs ʏᴏᴜ ʙᴀɴ ᴀ ᴜsᴇʀ ғʀᴏᴍ ᴛʜᴇ ɢʀᴏᴜᴘ ᴡɪᴛʜᴏᴜᴛ ɢɪᴠɪɴɢ ʜɪᴍ ᴛʜᴇ ᴘᴏssɪʙɪʟɪᴛʏ ᴛᴏ Jᴏɪɴ ᴀɢᴀɪɴ ᴜsɪɴɢ ᴛʜᴇ ʟɪɴᴋ ᴏғ ᴛʜᴇ ɢʀᴏᴜᴘ. [ғᴏʀ ᴀᴅᴍɪɴs ᴜsᴇ ᴏɴʟʏ].
-- [x]  sᴇᴛᴛɪɴɢs - ʟᴇᴛs ʏᴏᴜ ᴍᴀɴᴀɢᴇ ᴀʟʟ ᴛʜᴇ Bᴏᴛ sᴇᴛᴛɪɴɢs ɪɴ ᴀ ɢʀᴏᴜᴘ.  [ғᴏʀ ᴀᴅᴍɪɴs ᴜsᴇ ᴏɴʟʏ]
-- [x]  ᴍᴜᴛᴇ/ᴋɪᴄᴋ - ʟᴇᴛs ʏᴏᴜ ʀᴇᴍᴏᴠᴇ ᴀ ᴜsᴇʀ ғʀᴏᴍ ɢʀᴏᴜᴘ's ʙʟᴀᴄᴋʟɪsᴛ, ɢɪᴠɪɴɢ ᴛʜᴇᴍ ᴛʜᴇ ᴘᴏssɪʙɪʟɪᴛʏ ᴛᴏ Jᴏɪɴ ᴀɢᴀɪɴ ᴡɪᴛʜ ᴛʜᴇ ʟɪɴᴋ ᴏғ ᴛʜᴇ ɢʀᴏᴜᴘ.  [ғᴏʀ ᴀᴅᴍɪɴs ᴜsᴇ ᴏɴʟʏ].
-</details>
+---
 
-## 🔄 2026 DEPENDENCY REFRESH
+## ⚙️  Commands
+<details>
+<summary>User's Commands</summary>
 
-This release refreshes the dependency stack for current Python environments.
+- **id** - get group/channel id or your own id.
+- **top** - view today's top searches.
+- **info** - get your/user info or media info by replying to user/media.  
+- **imdb** - fetch movie/series details from IMDb.
+- **plan** - to check all available plans.
+- **anime** - fetch anime details.
+- **myplan** - to check your active plan.
+- **search** - find files from our database.
+- **movies** - shows latest movies uploaded in database.
+- **series** - shows latest series uploaded in database.
+- **redeem** - to redeem code.
+- **system** - to check system info.
+- **request** - request a file to be added.
+- **trending** - get today's trending list. 
 
-- **FuzzyWuzzy → RapidFuzz 3.14.6** for fuzzy matching.
-- **Pyrofork → 2.3.69**
-- **PyMongo → 4.18.1**
-- **Motor → 3.7.1** (latest Motor release; note that Motor is deprecated upstream, so a future release should migrate to PyMongo Async).
-- **uMongo → 4.0.0 + Marshmallow 4.3.1**
-- **Pillow → 12.3.0**
-- **psutil → 7.2.2**
-- **aiohttp → 3.14.3**
-- **aiofiles → 25.1.0**
-- **python-dotenv → 1.2.3**
-- **Instaloader → 4.15.3**
-- **APScheduler → 3.11.3**
-- **OpenCV headless → 5.0.0.93** (when enabled/installed separately)
-- **gTTS → 2.5.4**
-- **Requests → 2.34.2**
-- The old `fuzzywuzzy` and `python-Levenshtein` dependencies were removed; source code now uses `rapidfuzz`.
-
-> **Python 3.13 recommended.** The included Dockerfile uses `python:3.13-slim`.
-
-## ᴅᴇᴘʟᴏʏᴍᴇɴᴛ ᴠᴀʀɪᴀʙʟᴇs
-```- [x] API_ID - get it from telegram app
-- [x] API_HASH - get it from telegram app
-- [x] BOT_TOKEN - get it from telegram app
-- [x] ADMINS - for 2 or more '12345678 89674523' add space between ids
-- [x] LOG_CHANNEL - add a private channel id
-- [x] CHANNELS - add your database channel id ,if u will share your file here the bot will add the file in database autometiccaly
-- [x] DATABASE_URI - if you dont know how to get it, read this documentation from scratch
-```
-- [x] ᴍᴏʀᴇ ᴄᴏɴғɪɢs [ᴄʜᴀɴɢᴇ ʜᴇʀᴇ..](https://github.com/Codeflix-Bots/AutoFilter/Lucy/info.py)
 </details>
 
 
 <details>
-<summary><h3>
-- <b> ᴠᴘs/ʟᴏᴄᴀʟ ᴅᴇᴘʟᴏʏᴍᴇɴᴛ ᴍᴇᴛʜᴏᴅ </b>
-</h3></summary>
+<summary>Group Commands</summary>
 
-- Get your [Necessary Variables](https://github.com/Codeflix-Bots/AutoFilter/main/info.py)
-- git clone https://github.com/Codeflix-Bots/AutoFilter
-- # Install Packages
-- python3 -m pip install -U -r requirements.txt
-- Edit info.py with variables as given below then run bot
-- python3 bot.py
+- **/log** - set verification log channel.
+- **/time2** - set 2nd verification gap.
+- **/time3** - set 3rd verification gap.
+- **/reload** - reload group and manage it from PM.
+- **/verify** - set your 1st shortener for verification.
+- **/verify2** - set your 2nd shortener for verification.
+- **/verify3** - set your 3rd shortener for verification.
+- **/caption** - set custom file caption.
+- **/template** - set custom IMDb template.
+- **/tutorial** - set your 1st tutorial video.
+- **/tutorial2** - set your 2nd tutorial video.
+- **/tutorial3** - set your 3rd tutorial video.
+- **/fsub** - set custom force subscribe channel.
+- **/nofsub** - remove force subscribe channel.
+- **/details** - check your settings.  
+- **/settings** - change group settings as you want.
+</details>
 
-<p align="center">
-  <img src="https://graph.org/file/6126c635b91aa6bd8a4b3.jpg">
-</p>
+<details>
+<summary>Admin Commands</summary>
 
+- **/stats** - get bot statistics.
+- **/logs** - get recent logs.
+- **/restart** - restart the bot.
+- **/notify** - turn on/off update notifications.
+- **/pm_search** - enable/disable PM search.
+- **/trial_reset** - reset users' free trial.
+- **/delreq** - delete pending join requests.
+- **/save** - save a specific file in database.
+- **/delete** - remove a single file from database.
+- **/deletefiles** - delete files by name from database.
+- **/deleteall** - delete all files from database.
+- **/del_msg** - remove file name collection notification.
+- **/add_redeem** - generate a new redeem code.
+- **/allcodes** - view all redeem codes.
+- **/clearcodes** - clear all redeem codes.
+- **/add_premium** - add a user to premium.
+- **/get_premium** - view a user's premium info.
+- **/remove_premium** - remove a user from premium.
+- **/premium_users** - list all premium users.
+- **/send** - send a message to a user.
+- **/broadcast** - broadcast to all users.  
+- **/grp_broadcast** - broadcast to all groups.
+- **/checklimit** - check users' file limit.
+- **/resetlimit** - reset users' file limit.
+- **/post** - create a post using TMDB.
+- **/anipost** - create an anime post.
+- **/users** - list all bot users.
+- **/ban** - ban a user.
+- **/unban** - unban a user.
+- **/banned** - list all banned users.
+- **/chats** - list all chats with IDs.
+- **/leave** - leave a chat.
+- **/invite** - join a chat via invite.
+- **/enable** - enable a disabled chat.
+- **/disable** - disable a chat.
+- **/junk_group** - find junk groups.
+- **/clear_junk** - clear junk groups.
+- **/clean_groups** - clean all groups data.
+- **/resetgroup** - reset all group settings.
 
 </details>
-━━━━━━━━━━━━━━━━━━━━
 
-<h3 align="center">
-    ─「 sᴜᴩᴩᴏʀᴛ 」─
-</h3>
+---
 
-<p align="center">
-<a href="https://telegram.me/codeflixsupport"><img src="https://img.shields.io/badge/-Support%20Group-blue.svg?style=for-the-badge&logo=Telegram"></a>
-</p>
-<p align="center">
-<a href="https://telegram.me/codeflix_bots"><img src="https://img.shields.io/badge/-Support%20Channel-blue.svg?style=for-the-badge&logo=Telegram"></a>
-</p>
+## ⚠️ Disclaimer
 
-━━━━━━━━━━━━━━━━━━━━
+This repository is intended **strictly for educational purposes only**.  
+The authors are **not responsible** for any misuse or abuse of this code.  
+Use at your own discretion and **always respect platform rules and copyrights**.
 
-<h3 align="center">
-    ─「 ᴄʀᴇᴅɪᴛs 」─
-</h3>
+---
 
-- <b>[ʏᴀᴛᴏ](https://github.com/Codeflix-Bots)  ➻  [sᴏᴍᴇᴛʜɪɴɢ](https://t.me/cosmic_freak) </b>
-- <b>[ᴅᴇᴇɴᴅᴀʏᴀʟ](https://github.com/Codeflix-Bots)  ➻  [sᴏᴍᴇᴛʜɪɴɢ](https://github.com/Deendayal403/Deendayal_dhakad) </b>
-- <b>[ʏᴜᴊɪ](https://github.com/Codeflix-Bots)  ➻  [sᴏᴍᴇᴛʜɪɴɢ](https://t.me/nova_flix) </b>
- 
-<b>ᴀɴᴅ ᴀʟʟ [ᴛʜᴇ ᴄᴏɴᴛʀɪʙᴜᴛᴏʀs](https://github.com/Codeflix-Bots/LucyV2/graphs/contributors) ᴡʜᴏ ʜᴇʟᴩᴇᴅ ɪɴ ᴍᴀᴋɪɴɢ ʟᴜᴄʏ ʀᴏʙᴏᴛ ᴜsᴇғᴜʟ & ᴩᴏᴡᴇʀғᴜʟ 🖤 </b>
+## 💞 Credit
 
-━━━━━━━━━━━━━━━━━━━━
+- [TechifyBots](https://github.com/TechifyBots)
 
-## 2026 Upgrade Notes
-- Python 3.13 deployment baseline.
-- RapidFuzz replaces fuzzywuzzy.
-- Obsolete/duplicate dependency entries were removed.
-- Termux build/start scripts are included.
-- Dockerfile is suitable as a Koyeb web-service baseline.
-- Existing bot command/function flow is preserved.
+- [DreamXBotz](https://github.com/DreamXBotz)
+
+---
+
+## 😇 [Support](https://techifybots.github.io/PayWeb)
+
+## 🥳 [Developer](https://instagram.com/ImRahulDhankhar)
+
+## 🚀 [Deployment Guide](https://www.youtube.com/playlist?list=PLQrMSile4s5UnIEvWyKM1MKFuNg8Wfh2S)
+
+---
+
+## 📌 Note
+
+𝘊𝘰𝘱𝘺𝘪𝘯𝘨 𝘰𝘳 𝘚𝘦𝘭𝘭𝘪𝘯𝘨 𝘵𝘩𝘪𝘴 𝘳𝘦𝘱𝘰 𝘪𝘴 𝘴𝘵𝘳𝘪𝘤𝘵𝘭𝘺 𝘱𝘳𝘰𝘩𝘪𝘣𝘪𝘵𝘦𝘥.
