@@ -82,8 +82,8 @@ async def maintenance_toggle_callback(bot: Client, query: CallbackQuery):
             reply_markup=InlineKeyboardMarkup(buttons),
             parse_mode=enums.ParseMode.HTML
         )
-    except Exception:
-        pass
+    except Exception as _ignored:
+        logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
 
 @Client.on_callback_query(filters.regex("none"))
 async def none_callback(bot, query):

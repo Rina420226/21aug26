@@ -6,15 +6,15 @@ import time
 import psutil
 from pyrogram import Client, filters, StopPropagation, enums
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
-from pyrogram.errors import PeerIdInvalid, ChatAdminRequired, FloodWait
+from pyrogram.errors import PeerIdInvalid, ChatAdminRequired, FloodWait, UserNotParticipant, ChannelInvalid
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from info import ADMINS, MULTIPLE_DB, OWNER
 from database.users_chats_db import db
+from database import jobs_db
+from jobs_runner import run_users_broadcast, lock as broadcast_lock
 from database.ia_filterdb import Media, Media2, db as db_stats, db2 as db2_stats, client, client2
 from utils import get_size, temp, get_settings, get_readable_time, users_broadcast, groups_broadcast, clear_junk, junk_group
 from Script import script
-from bot import botStartTime
-from utils import temp
 
 lock = asyncio.Lock()
 
@@ -43,8 +43,8 @@ async def grp_bd(bot, message):
         reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("👨‍💻 ᴀᴅᴍɪɴ", user_id=int(OWNER))]]))
     try:
         await k.pin()
-    except:
-        pass
+    except Exception as _ignored:
+        logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
     await bot.leave_chat(message.chat.id)
     raise StopPropagation
 
@@ -61,8 +61,8 @@ async def ban_a_user(bot, message):
         reason = "No reason Provided"
     try:
         chat = int(chat)
-    except:
-        pass
+    except Exception as _ignored:
+        logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
     try:
         k = await bot.get_users(chat)
     except PeerIdInvalid:
@@ -92,8 +92,8 @@ async def unban_a_user(bot, message):
         reason = "No reason Provided"
     try:
         chat = int(chat)
-    except:
-        pass
+    except Exception as _ignored:
+        logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
     try:
         k = await bot.get_users(chat)
     except PeerIdInvalid:
@@ -145,7 +145,7 @@ async def broadcast_cancel(bot, query):
 async def broadcast_users(bot, message):
     if not message.reply_to_message:
         return await message.reply("<b>Reply to a message to broadcast.</b>", parse_mode=enums.ParseMode.HTML)
-    if lock.locked():
+    if broadcast_lock.locked():
         return await message.reply("⚠️ Another broadcast is in progress. Please wait...")
     ask = await message.reply("𝖣𝗈 𝗒𝗈𝗎 𝗐𝖺𝗇𝗍 𝗍𝗈 𝗉𝗂𝗇 𝗍𝗁𝗂𝗌 𝗆𝖾𝗌𝗌𝖺𝗀𝖾 𝗂𝗇 𝗎𝗌𝖾𝗋𝗌?", reply_markup=ReplyKeyboardMarkup([["Yes", "No"]], one_time_keyboard=True, resize_keyboard=True))
     try:
@@ -158,59 +158,9 @@ async def broadcast_users(bot, message):
         return await message.reply("❌ Invalid input. Broadcast cancelled.")
     is_pin = techifybots_user_response.text == "Yes"
     b_msg = message.reply_to_message
-    users = [user async for user in await db.get_all_users()]
-    total_users = len(users)
-    techifybots_status_msg = await message.reply_text("📤 <b>Broadcasting your message...</b>")
-    success = blocked = deleted = failed = 0
-    start_time = time.time()
-    cancelled = False
-    async def send(user):
-        try:
-            _, result = await users_broadcast(int(user["id"]), b_msg, is_pin)
-            return result
-        except Exception as e:
-            logging.exception(f"Error sending broadcast to {user['id']}")
-            return "Error"
-    async with lock:
-        for i in range(0, total_users, 100):
-            if temp.B_USERS_CANCEL:
-                temp.B_USERS_CANCEL = False
-                cancelled = True
-                break
-            batch = users[i:i + 100]
-            results = await asyncio.gather(*[send(user) for user in batch])
-            for res in results:
-                if res == "Success":
-                    success += 1
-                elif res == "Blocked":
-                    blocked += 1
-                elif res == "Deleted":
-                    deleted += 1
-                elif res == "Error":
-                    failed += 1
-            done = i + len(batch)
-            elapsed = get_readable_time(time.time() - start_time)
-            await techifybots_status_msg.edit(
-                f"📣 <b>Broadcast Progress....:</b>\n\n"
-                f"👥 Total: <code>{total_users}</code>\n"
-                f"✅ Done: <code>{done}</code>\n"
-                f"📬 Success: <code>{success}</code>\n"
-                f"⛔ Blocked: <code>{blocked}</code>\n"
-                f"🗑️ Deleted: <code>{deleted}</code>\n"
-                f"⏱️ Time: {elapsed}",
-                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("❌ CANCEL", callback_data="broadcast_cancel#users")]]))
-            await asyncio.sleep(0.1)
-    elapsed = get_readable_time(time.time() - start_time)
-    final_status = (
-        f"{'❌ <b>Broadcast Cancelled.</b>' if cancelled else '✅ <b>Broadcast Completed.</b>'}\n\n"
-        f"🕒 Time: {elapsed}\n"
-        f"👥 Total: <code>{total_users}</code>\n"
-        f"📬 Success: <code>{success}</code>\n"
-        f"⛔ Blocked: <code>{blocked}</code>\n"
-        f"🗑️ Deleted: <code>{deleted}</code>\n"
-        f"❌ Failed: <code>{failed}</code>"
-    )
-    await techifybots_status_msg.edit(final_status)
+    status_msg = await message.reply_text("📤 <b>Broadcasting your message...</b>")
+    await run_users_broadcast(bot, b_msg, is_pin, status_msg, start=0)
+
 
 @Client.on_message(filters.command("grp_broadcast") & filters.user(ADMINS) & filters.private)
 async def broadcast_group(bot, message):
@@ -347,7 +297,7 @@ async def leave_a_chat(bot, message):
     chat = message.command[1]
     try:
         chat = int(chat)
-    except:
+    except Exception:
         chat = chat
     try:
         await bot.send_message(
@@ -372,7 +322,7 @@ async def disable_chat(bot, message):
         reason = "No reason Provided"
     try:
         chat_ = int(chat)
-    except:
+    except Exception:
         return await message.reply('Give Me A Valid Chat ID')
     cha_t = await db.get_chat(int(chat_))
     if not cha_t:
@@ -398,7 +348,7 @@ async def re_enable_chat(bot, message):
     chat = message.command[1]
     try:
         chat_ = int(chat)
-    except:
+    except Exception:
         return await message.reply('Give Me A Valid Chat ID')
     sts = await db.get_chat(int(chat))
     if not sts:
@@ -428,7 +378,7 @@ async def get_stats(bot, message):
             stats = await client[db_name].command("dbStats")
             db_size += stats['storageSize'] + stats['indexSize']
         free = DB_SIZE - db_size
-        uptime = get_readable_time(time.time() - botStartTime)
+        uptime = get_readable_time(time.time() - temp.START_TIME)
         ram = psutil.virtual_memory().percent
         cpu = psutil.cpu_percent()
         if MULTIPLE_DB == False:
@@ -461,7 +411,7 @@ async def gen_invite(bot, message):
     chat = message.command[1]
     try:
         chat = int(chat)
-    except:
+    except Exception:
         return await message.reply('Give Me A Valid Chat ID')
     try:
         link = await bot.create_chat_invite_link(chat)
@@ -526,8 +476,8 @@ async def clean_groups_handler(client, message):
                 except (UserNotParticipant, PeerIdInvalid, ChannelInvalid):
                     await db.delete_chat(chat_id)
                     deleted_count += 1
-                except Exception:
-                    pass
+                except Exception as _ignored:
+                    logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
             except (UserNotParticipant, PeerIdInvalid, ChannelInvalid):
                 await db.delete_chat(chat_id)
                 deleted_count += 1
@@ -544,3 +494,20 @@ async def clean_groups_handler(client, message):
         except Exception as e:
             print(f'Error in clean_groups loop: {e}')
     await msg.edit(f'**Clean Groups Complete**\n\nTotal Processed: {processed}\nDeleted: {deleted_count}')
+
+
+@Client.on_message(filters.command("dedupe") & filters.user(ADMINS))
+async def dedupe_cmd(bot, message):
+    """/dedupe = dry run (counts only), /dedupe confirm = delete duplicates (same file_name + file_size)."""
+    from database.ia_filterdb import remove_duplicate_files
+    confirm = len(message.command) > 1 and message.command[1].lower() == "confirm"
+    m = await message.reply("🔎 Scanning for duplicates...")
+    try:
+        groups, extra, deleted = await remove_duplicate_files(dry_run=not confirm)
+    except Exception as e:
+        logging.exception("dedupe failed")
+        return await m.edit(f"❌ Failed: <code>{e}</code>")
+    if confirm:
+        await m.edit(f"🧹 Done. Duplicate groups: <code>{groups}</code>\nDeleted files: <code>{deleted}</code>")
+    else:
+        await m.edit(f"Duplicate groups: <code>{groups}</code>\nExtra copies: <code>{extra}</code>\n\nRun <code>/dedupe confirm</code> to delete the extra copies (first copy is kept).")

@@ -7,6 +7,7 @@ from pyrogram.errors import FloodWait
 from pyrogram.errors.exceptions.bad_request_400 import ChannelInvalid, ChatAdminRequired, UsernameInvalid, UsernameNotModified
 from info import ADMINS, LOG_CHANNEL
 from database.ia_filterdb import save_file
+from database import jobs_db
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from utils import temp, get_readable_time
 from math import ceil
@@ -46,7 +47,7 @@ async def index_files(bot, query):
     )
     try:
         chat = int(chat)
-    except:
+    except Exception:
         chat = chat
     await index_files_to_db(int(lst_msg_id), chat, msg, bot)
 
@@ -77,7 +78,7 @@ async def send_for_index(bot, message):
         return await message.reply(f'Errors - {e}')
     try:
         k = await bot.get_messages(chat_id, last_msg_id)
-    except:
+    except Exception:
         return await message.reply('Make Sure That Iam An Admin In The Channel, if channel is private')
     if k.empty:
         return await message.reply('This may be group and i am not a admin of the group.')
@@ -115,7 +116,7 @@ async def set_skip_number(bot, message):
         _, skip = message.text.split(" ")
         try:
             skip = int(skip)
-        except:
+        except Exception:
             return await message.reply("Skip number should be an integer.")
         await message.reply(f"Successfully set SKIP number as {skip}")
         temp.CURRENT = int(skip)
@@ -128,9 +129,10 @@ def get_progress_bar(percent, length=10):
     unfilled = length - filled
     return '🟩' * filled + '⬜️' * unfilled
 
-async def index_files_to_db(lst_msg_id, chat, msg, bot):
+async def index_files_to_db(lst_msg_id, chat, msg, bot, start_from=None):
     total_files = 0
     duplicate = 0
+    blocked = 0
     errors = 0
     deleted = 0
     no_media = 0
@@ -140,17 +142,20 @@ async def index_files_to_db(lst_msg_id, chat, msg, bot):
 
     async with lock:
         try:
-            current = temp.CURRENT
+            current = start_from if start_from is not None else temp.CURRENT
+            base = current
+            job_id = f"index:{chat}"
             temp.CANCEL = False
             total_messages = lst_msg_id
             total_fetch = lst_msg_id - current
-            if total_messages <= 0:
+            if total_messages <= 0 or total_fetch <= 0:
                 await msg.edit(
                     "🚫 No Messages To Index.",
                     reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Close', callback_data='close_data')]])
                 )
                 return
-            batches = ceil(total_messages / BATCH_SIZE)
+            batches = ceil(total_fetch / BATCH_SIZE)
+            await jobs_db.save_job(job_id, kind="index", chat=chat, last_msg_id=lst_msg_id, current=current, status="running")
             batch_times = []
             await msg.edit(
                 f"📊 Indexing Starting......\n"
@@ -160,7 +165,7 @@ async def index_files_to_db(lst_msg_id, chat, msg, bot):
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Cancel', callback_data='index_cancel')]])
             )
             for batch in range(batches):
-                if temp.CANCEL:
+                if temp.CANCEL or current >= lst_msg_id:
                     break
                 batch_start = time.time()
                 start_id = current + 1
@@ -210,10 +215,13 @@ async def index_files_to_db(lst_msg_id, chat, msg, bot):
                             duplicate += 1
                         elif code == 2:
                             errors += 1
+                        elif code == 4:
+                            blocked += 1
                 batch_time = time.time() - batch_start
                 batch_times.append(batch_time)
                 elapsed = time.time() - start_time
-                progress = current - temp.CURRENT
+                progress = current - base
+                await jobs_db.save_job(job_id, current=current, status="running")
                 percentage = (progress / total_fetch) * 100
                 avg_batch_time = sum(batch_times) / len(batch_times) if batch_times else 1
                 eta = (total_fetch - progress) / BATCH_SIZE * avg_batch_time
@@ -234,13 +242,18 @@ async def index_files_to_db(lst_msg_id, chat, msg, bot):
                     reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Cancel', callback_data='index_cancel')]])
                 )
             elapsed = time.time() - start_time
+            if temp.CANCEL:
+                await jobs_db.save_job(job_id, current=current, status="paused")
+            else:
+                await jobs_db.finish_job(job_id)
             await msg.edit(
-                f"✅ Indexing Completed!\n"
+                f"{'⏸ Indexing Paused (use /resume_jobs to continue)' if temp.CANCEL else '✅ Indexing Completed!'}\n"
                 f"Total Messages: <code>{total_messages}</code>\n"
                 f"Total Fetched: <code>{total_fetch}</code>\n"
                 f"Fetched: <code>{current}</code>\n"
                 f"Saved: <code>{total_files}</code>\n"
                 f"Duplicates: <code>{duplicate}</code>\n"
+                f"Blocked (takedown): <code>{blocked}</code>\n"
                 f"Deleted: <code>{deleted}</code>\n"
                 f"Non-Media: <code>{no_media + unsupported}</code> (Unsupported: <code>{unsupported}</code>)\n"
                 f"Errors: <code>{errors}</code>\n"
@@ -248,7 +261,50 @@ async def index_files_to_db(lst_msg_id, chat, msg, bot):
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Close', callback_data='close_data')]])
             )
         except Exception as e:
+            logger.exception("Indexing failed")
+            try:
+                await jobs_db.save_job(f"index:{chat}", status="paused", error=str(e)[:200])
+            except Exception as _ignored:
+                logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
             await msg.edit(
-                f"❌ Error: <code>{e}</code>",
+                f"❌ Error: <code>{e}</code>\nProgress is saved - use /resume_jobs.",
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Close', callback_data='close_data')]])
             )
+
+
+@Client.on_message(filters.command("resume_jobs") & filters.user(ADMINS))
+async def resume_jobs_cmd(bot, message):
+    jobs = await jobs_db.list_unfinished()
+    if not jobs:
+        return await message.reply("✅ No unfinished jobs.")
+    rows = []
+    text = "<b>Unfinished jobs</b>\n\n"
+    for j in jobs:
+        if j.get("kind") == "index":
+            text += f"📥 Index <code>{j['chat']}</code> - at message {j.get('current')}/{j.get('last_msg_id')} ({j.get('status')})\n"
+            rows.append([InlineKeyboardButton(f"▶️ Resume index {j['chat']}", callback_data=f"rj#{j['_id']}")])
+        elif j.get("kind") == "bcast_users":
+            text += f"📣 Broadcast - {j.get('done', 0)}/{j.get('total', 0)} sent ({j.get('status')})\n"
+            rows.append([InlineKeyboardButton("▶️ Resume broadcast", callback_data=f"rj#{j['_id']}")])
+    rows.append([InlineKeyboardButton("Close", callback_data="close_data")])
+    await message.reply(text, reply_markup=InlineKeyboardMarkup(rows))
+
+
+@Client.on_callback_query(filters.regex(r"^rj#") & filters.user(ADMINS))
+async def resume_job_cb(bot, query):
+    job_id = query.data.split("#", 1)[1]
+    job = await jobs_db.get_job(job_id)
+    if not job:
+        return await query.answer("Job not found (already finished?)", show_alert=True)
+    if job.get("kind") == "index":
+        if lock.locked():
+            return await query.answer("Wait until previous process complete.", show_alert=True)
+        await query.answer("Resuming...")
+        chat = job["chat"]
+        await query.message.edit("▶️ Resuming indexing...", reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton("Cancel", callback_data="index_cancel")]]))
+        await index_files_to_db(int(job["last_msg_id"]), chat, query.message, bot, start_from=int(job.get("current", 0)))
+    elif job.get("kind") == "bcast_users":
+        from jobs_runner import resume_users_broadcast
+        await query.answer("Resuming broadcast...")
+        await resume_users_broadcast(bot, query.message, job)

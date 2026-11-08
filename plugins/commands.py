@@ -160,7 +160,7 @@ async def start(client, message):
         try:
             _, grp_id, file_id = data.split("_", 2)
             grp_id = int(grp_id)
-        except:
+        except Exception:
             grp_id = 0
             file_id = data
         file_details_task = asyncio.create_task(get_file_details(file_id))
@@ -323,7 +323,7 @@ async def start(client, message):
                 if CAPTION:
                     try:
                         f_caption=CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='')
-                    except:
+                    except Exception:
                         return
                 if IS_FILE_LIMIT and not is_premium:
                     await db.increment_file_count(user)
@@ -567,7 +567,7 @@ async def connect_group(client, message):
             chat = await client.get_chat(group_id)
             await db.connect_group(group_id, user_id)
             await message.reply_text(f"ʟɪɴᴋᴇᴅ sᴜᴄᴄᴇssꜰᴜʟʟʏ ✅ {chat.title} ᴛᴏ ᴘᴍ.")
-        except:
+        except Exception:
             await message.reply_text("Invalid group ID or error occurred.")
 
 @Client.on_message(filters.command('template'))
@@ -650,7 +650,7 @@ async def deletemultiplefiles(bot, message):
         return await message.reply_text(f"<b>Hey {message.from_user.mention}, This command won't work in groups. It only works on my PM !</b>")
     try:
         keyword = message.text.split(" ", 1)[1]
-    except:
+    except Exception:
         return await message.reply_text(f"<b>Hey {message.from_user.mention}, Give me a keyword along with the command to delete files.</b>")
     k = await bot.send_message(chat_id=message.chat.id, text=f"<b>Fetching Files for your query {keyword} on DB... Please wait...</b>")
     files, total = await get_bad_files(keyword)
@@ -812,7 +812,7 @@ async def save_caption(client, message):
         return await message.reply_text("<b>ᴜꜱᴇ ᴛʜɪꜱ ᴄᴏᴍᴍᴀɴᴅ ɪɴ ɢʀᴏᴜᴘ...</b>")
     try:
         caption = message.text.split(" ", 1)[1]
-    except:
+    except Exception:
         return await message.reply_text("<code>ɢɪᴠᴇ ᴍᴇ ᴀ ᴄᴀᴘᴛɪᴏɴ ᴀʟᴏɴɢ ᴡɪᴛʜ ɪᴛ.\n\nᴇxᴀᴍᴘʟᴇ -\n\nꜰᴏʀ ꜰɪʟᴇ ɴᴀᴍᴇ - <code>{file_name}</code>\nꜰᴏʀ ꜰɪʟᴇ ꜱɪᴢᴇ - <code>{file_size}</code>\n\n<code>/caption {file_name}</code></code>")
     await save_group_settings(grp_id, 'caption', caption)
     await message.reply_text(f"ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ᴄʜᴀɴɢᴇᴅ ᴄᴀᴘᴛɪᴏɴ ꜰᴏʀ {title}\n\nᴄᴀᴘᴛɪᴏɴ - {caption}", disable_web_page_preview=True)
@@ -957,7 +957,7 @@ async def set_time_2(client, message):
         return await message.reply_text(script.ADMIN_ALRT_TXT)
     try:
         time = int(message.text.split(" ", 1)[1])
-    except:
+    except Exception:
         return await message.reply_text("<b>ᴄᴏᴍᴍᴀɴᴅ ɪɴᴄᴏᴍᴘʟᴇᴛᴇ\n\nᴜꜱᴇ ᴛʜɪꜱ ᴄᴏᴍᴍᴀɴᴅ ʟɪᴋᴇ ᴛʜɪꜱ - <code>/time2 600</code> [ ᴛɪᴍᴇ ᴍᴜꜱᴛ ʙᴇ ɪɴ ꜱᴇᴄᴏɴᴅꜱ ]</b>")   
     await save_group_settings(grp_id, 'verify_time', time)
     await message.reply_text(f"<b>✅️ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ꜱᴇᴛ 2ɴᴅ ᴠᴇʀɪꜰʏ ᴛɪᴍᴇ ꜰᴏʀ {title}\n\nᴛɪᴍᴇ - <code>{time}</code></b>")
@@ -975,7 +975,7 @@ async def set_time_3(client, message):
         return await message.reply_text(script.ADMIN_ALRT_TXT)
     try:
         time = int(message.text.split(" ", 1)[1])
-    except:
+    except Exception:
         return await message.reply_text("<b>ᴄᴏᴍᴍᴀɴᴅ ɪɴᴄᴏᴍᴘʟᴇᴛᴇ\n\nᴜꜱᴇ ᴛʜɪꜱ ᴄᴏᴍᴍᴀɴᴅ ʟɪᴋᴇ ᴛʜɪꜱ - <code>/time3 3600</code> [ ᴛɪᴍᴇ ᴍᴜꜱᴛ ʙᴇ ɪɴ ꜱᴇᴄᴏɴᴅꜱ ]</b>")   
     await save_group_settings(grp_id, 'third_verify_time', time)
     await message.reply_text(f"<b>✅️ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ꜱᴇᴛ 3ʀᴅ ᴠᴇʀɪꜰʏ ᴛɪᴍᴇ ꜰᴏʀ {title}\n\nᴛɪᴍᴇ - <code>{time}</code></b>")
@@ -1143,7 +1143,7 @@ async def nofsub(client, message):
             try:
                 chat = await client.get_chat(cid)
                 r_t.append(f"• {chat.title} ({cid})")
-            except:
+            except Exception:
                 r_t.append(f"• ᴜɴᴋɴᴏᴡɴ ({cid})")
         await message.reply_text(
             f"✅ ʀᴇᴍᴏᴠᴇᴅ {len(r_id)} ꜰsᴜʙ ᴄʜᴀɴɴᴇʟ(s) ꜰʀᴏᴍ {title}:\n" +

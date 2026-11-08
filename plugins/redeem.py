@@ -100,7 +100,7 @@ async def all_codes(c, m):
             try:
                 u = await c.get_users(x["user_id"])
                 user_text = f"[{u.first_name}](tg://user?id={u.id})"
-            except:
+            except Exception:
                 user_text = f"UID {x['user_id']}"
         text += (f"🔑 `{x.get('original_code','?')}` | ⌛ {x.get('duration','?')} | {'✅' if x.get('used') else '⭕'}\nʙʏ: {user_text} (ID: {x.get('user_id','-')}) | ⏱️ {x['created_at'].astimezone(pytz.timezone('Asia/Kolkata')).strftime('%d-%m-%Y ᴀᴛ %I:%M %p')}\n\n")
     for chunk in [text[i:i+4096] for i in range(0, len(text), 4096)]:

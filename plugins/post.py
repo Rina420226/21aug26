@@ -333,8 +333,8 @@ async def start_post_session(client: Client, message: Message, user_id: int, mov
     if user_id in post_sessions and post_sessions[user_id].get("last_preview_message_id"):
         try:
             await client.delete_messages(message.chat.id, post_sessions[user_id]["last_preview_message_id"])
-        except Exception:
-            pass
+        except Exception as _ignored:
+            logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
     post_sessions[user_id] = {
         "movie_name": movie_name,
         "caption": None,
@@ -366,7 +366,7 @@ async def start_anipost_session(client: Client, message: Message, user_id: int, 
     data = await anilist_get_media(query)
     try:
         res = json.loads(data)["data"].get("Media", None)
-    except:
+    except Exception:
         res = None
     if not res:
         return await message.reply_text("⚠️ 𝖮𝗈𝗉𝗌! 𝖨 𝖼𝗈𝗎𝗅𝖽𝗇’𝗍 𝖿𝖾𝗍𝖼𝗁 𝗍𝗁𝖾 𝖽𝖾𝗍𝖺𝗂𝗅𝗌.")
@@ -397,8 +397,8 @@ async def start_anipost_session(client: Client, message: Message, user_id: int, 
     if user_id in post_sessions and post_sessions[user_id].get("last_preview_message_id"):
         try:
             await client.delete_messages(message.chat.id, post_sessions[user_id]["last_preview_message_id"])
-        except:
-            pass
+        except Exception as _ignored:
+            logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
     post_sessions[user_id] = {
         "movie_name": anime_name,
         "caption": None,
@@ -484,8 +484,8 @@ async def update_post_preview(client: Client, session_id: int, chat_id: int, for
         if not is_new:
             try:
                 await client.delete_messages(chat_id, session["last_preview_message_id"])
-            except Exception:
-                pass
+            except Exception as _ignored:
+                logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
         status_msg = await client.send_message(
             chat_id, "<i>𝖥𝖾𝗍𝖼𝗁𝗂𝗇𝗀 𝖽𝖾𝗍𝖺𝗂𝗅𝗌...</i>",
             reply_to_message_id=session["original_message_id"]

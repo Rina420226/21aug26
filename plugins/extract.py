@@ -38,8 +38,8 @@ def format_track(lang: str | None, title: str | None) -> str:
 async def extract_data_handler(client: Client, query: CallbackQuery):
     try:
         await query.answer("Fetching Details...", show_alert=False)
-    except Exception:
-        pass
+    except Exception as _ignored:
+        logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
     _, file_id = query.data.split(":")
     current_markup = query.message.reply_markup
     wait_keyboard = []
@@ -57,8 +57,8 @@ async def extract_data_handler(client: Client, query: CallbackQuery):
 
     try:
         await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(wait_keyboard))
-    except Exception:
-        pass
+    except Exception as _ignored:
+        logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
 
     temp_path = os.path.join(
         tempfile.gettempdir(),

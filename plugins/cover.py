@@ -105,15 +105,15 @@ async def custom_send_cached_media(
                         access_hash=vidcover_media.photo.access_hash,
                         file_reference=vidcover_media.photo.file_reference
                     )
-        except Exception as e:
-            pass
+        except Exception as _ignored:
+            logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
 
         media = utils.get_input_media_from_file_id(file_id)
         if vidcover_file is not None:
             try:
                 media.video_cover = vidcover_file
-            except Exception as e:
-                pass
+            except Exception as _ignored:
+                logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
         media.spoiler = has_spoiler
 
         r = await self.invoke(
@@ -277,8 +277,8 @@ async def custom_send_video(
                     if vidcover_file is not None:
                         try:
                             media.video_cover = vidcover_file
-                        except Exception as e:
-                            pass
+                        except Exception as _ignored:
+                            logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
                     media.spoiler = has_spoiler
             else:
                 thumb = await self.save_file(thumb)

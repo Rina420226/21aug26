@@ -164,13 +164,13 @@ async def anime_callback(client, query: CallbackQuery):
     try:
         sd = res.get("startDate", {})
         start = f"{month_name[sd['month']]} {sd['day']}, {sd['year']}" if sd.get('year') else "-"
-    except:
+    except Exception:
         start = "-"
     caption += f"<b>‣ sᴛᴀʀᴛ :</b> {start}\n"
     try:
         ed = res.get("endDate", {})
         end = f"{month_name[ed['month']]} {ed['day']}, {ed['year']}" if ed.get('year') else "-"
-    except:
+    except Exception:
         end = "-"
     caption += f"<b>‣ ᴇɴᴅ :</b> {end}\n"
     studio_edges = res.get("studios", {}).get("edges", [])
@@ -354,13 +354,13 @@ async def send_system_info(client,message):
         return f"{b:.2f} PB"
     try:
         with open('/proc/uptime')as f:sys_uptime=fmt(float(f.readline().split()[0]))
-    except:sys_uptime="𝖴𝗇𝖺𝗏𝖺𝗂𝗅𝖺𝖻𝗅𝖾"
+    except Exception:sys_uptime="𝖴𝗇𝖺𝗏𝖺𝗂𝗅𝖺𝖻𝗅𝖾"
     try:
         with open('/proc/meminfo')as f:mem=f.readlines();total=size(mem[0].split()[1]);avail=size(mem[2].split()[1]);used=size(int(mem[0].split()[1])-int(mem[2].split()[1]))
-    except:total,used="𝖴𝗇𝖺𝗏𝖺𝗂𝗅𝖺𝖻𝗅𝖾","𝖴𝗇𝖺𝗏𝖺𝗂𝗅𝖺𝖻𝗅𝖾"
+    except Exception:total,used="𝖴𝗇𝖺𝗏𝖺𝗂𝗅𝖺𝖻𝗅𝖾","𝖴𝗇𝖺𝗏𝖺𝗂𝗅𝖺𝖻𝗅𝖾"
     try:
         td,ud,_=shutil.disk_usage("/");td=size(td//1024);ud=size(ud//1024)
-    except:td,ud="𝖴𝗇𝖺𝗏𝖺𝗂𝗅𝖺𝖻𝗅𝖾","𝖴𝗇𝖺𝗏𝖺𝗂𝗅𝖺𝖻𝗅𝖾"
+    except Exception:td,ud="𝖴𝗇𝖺𝗏𝖺𝗂𝗅𝖺𝖻𝗅𝖾","𝖴𝗇𝖺𝗏𝖺𝗂𝗅𝖺𝖻𝗅𝖾"
     info=(f"💻 <b>𝖲𝗒𝗌𝗍𝖾𝗆 𝖨𝗇𝖿𝗈𝗋𝗆𝖺𝗍𝗂𝗈𝗇</b>\n\n"
           f"🖥️ <b>𝖮𝖲 :</b> {platform.system()}\n"
           f"⏰ <b>𝖡𝗈𝗍 𝖴𝗉𝗍𝗂𝗆𝖾 :</b> {fmt(time.time()-start_time)}\n"
@@ -386,8 +386,8 @@ async def save_group(bot, message):
             k = await message.reply(text=script.CHAT_RESTRICTED_TXT, reply_markup=InlineKeyboardMarkup(buttons))
             try:
                 await k.pin()
-            except:
-                pass
+            except Exception as _ignored:
+                logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
             await bot.leave_chat(message.chat.id)
             return
         await message.reply_text(text=script.BOT_ADD_TXT.format(message.chat.title), reply_markup=InlineKeyboardMarkup(buttons))
@@ -403,8 +403,8 @@ async def save_group(bot, message):
                 if temp.MELCOW.get('welcome'):
                     try:
                         await temp.MELCOW['welcome'].delete()
-                    except:
-                        pass
+                    except Exception as _ignored:
+                        logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
                 try:
                     temp.MELCOW['welcome'] = await message.reply_photo(
                         photo=MELCOW_PHOTO,
@@ -418,8 +418,8 @@ async def save_group(bot, message):
                 if temp.MELCOW.get('welcome'):
                     await temp.MELCOW['welcome'].delete()
                     temp.MELCOW['welcome'] = None 
-            except:
-                pass
+            except Exception as _ignored:
+                logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
 
 @Client.on_message(filters.chat(DELETE_CHANNELS) & media_filter)
 async def deletemultiplemedia(bot, message):
