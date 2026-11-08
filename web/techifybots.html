@@ -2,10 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta property="og:image" content="https://i.ibb.co/M8S0Zzj/live-streaming.png" />
+  <meta property="og:title" content="{{brand_name}} - Video Player" />
+  <meta property="og:description" content="Watch your videos with {{brand_name}}." />
+  <meta name="theme-color" content="#090d1a" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%2306b6d4'/%3E%3Cstop offset='1' stop-color='%237c3aed'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M36 7 17 35h13l-3 22 21-31H35z' fill='white'/%3E%3C/svg%3E" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Techify Bots</title>
+  <title>{{brand_name}} - Video Player</title>
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -253,6 +256,91 @@
       grid-template-columns: 1fr 360px;
       gap: 24px;
       align-items: start;
+    }
+
+
+    /* Tudubotz brand + refreshed player */
+    :root {
+      --accent-primary: #06b6d4;
+      --accent-secondary: #7c3aed;
+      --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #7c3aed 100%);
+      --bg-primary: #090d1a;
+      --bg-secondary: #111a2e;
+      --bg-tertiary: #18243b;
+    }
+
+    .logo-icon {
+      background: linear-gradient(135deg, #06b6d4, #7c3aed) !important;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 14px !important;
+      box-shadow: 0 8px 24px rgba(6,182,212,.25), 0 0 22px rgba(124,58,237,.18) !important;
+    }
+
+    .logo-icon i { color: #fff !important; }
+    .logo { letter-spacing: -.6px; }
+
+    .player-container {
+      background: #050814;
+      border: 1px solid rgba(125, 211, 252, .18);
+      border-radius: 18px;
+      box-shadow: 0 18px 55px rgba(0,0,0,.48), 0 0 0 1px rgba(124,58,237,.08);
+    }
+
+    .player {
+      aspect-ratio: 16 / 9;
+      object-fit: contain;
+      background: #02040a;
+    }
+
+    .plyr {
+      --plyr-color-main: #06b6d4;
+      --plyr-video-control-color: #fff;
+      --plyr-video-control-color-hover: #fff;
+      --plyr-video-control-background-hover: rgba(6,182,212,.8);
+      --plyr-menu-background: #111a2e;
+      --plyr-menu-color: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .plyr--video .plyr__controls {
+      background: linear-gradient(transparent, rgba(3,7,18,.92));
+      padding: 16px 14px 12px;
+    }
+
+    .ad-slot {
+      width: min(100% - 32px, 1100px);
+      min-height: 100px;
+      margin: 22px auto;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border: 1px dashed rgba(148,163,184,.3);
+      border-radius: 12px;
+      background: rgba(15,23,42,.45);
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    .ad-slot-top { min-height: 110px; }
+    .ad-slot-player { min-height: 100px; }
+    .ad-label {
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+      color: #64748b;
+    }
+    .ad-placeholder { font-size: 12px; }
+
+    @media (max-width: 600px) {
+      .ad-slot { width: calc(100% - 24px); min-height: 86px; margin: 14px auto; }
+      .player-container { border-radius: 12px; }
+      .plyr { border-radius: 10px; }
+      .logo { font-size: 20px; }
+      .logo-icon { width: 38px; height: 38px; }
     }
 
     /* Player Section */
@@ -1651,10 +1739,10 @@
     <header>
       <div class="logo-wrapper">
         <div class="logo">
-          <div class="logo-icon">
-            <i class="fa-solid fa-play"></i>
+          <div class="logo-icon" aria-label="{{brand_name}} logo">
+            <i class="fa-solid fa-bolt"></i>
           </div>
-          <span>Stream</span>
+          <span>{{brand_name}}</span>
         </div>
         <div class="live-badge">
           <span>Live</span>
@@ -1679,6 +1767,14 @@
         </div>
       </div>
     </header>
+
+    <!-- Top advertisement slot: paste your ad-network code inside this container -->
+    {% if ad_top %}
+    <div class="ad-slot ad-slot-top" aria-label="Advertisement">
+      <span class="ad-label">ADVERTISEMENT</span>
+      {{ad_top}}
+    </div>
+    {% endif %}
 
     <!-- Main Container -->
     <div class="main-container">
@@ -1783,6 +1879,14 @@
             </div>
           </div>
         </div>
+
+        {% if ad_player %}
+        <!-- Advertisement below the video player -->
+        <div class="ad-slot ad-slot-player" aria-label="Advertisement">
+          <span class="ad-label">ADVERTISEMENT</span>
+          {{ad_player}}
+        </div>
+        {% endif %}
       </div>
 
       <!-- Sidebar -->
@@ -1866,35 +1970,23 @@
       <div class="footer-content">
         <div class="footer-grid">
           <div class="footer-brand">
-            <div class="footer-logo">Techify Bots</div>
+            <div class="footer-logo">{{brand_name}}</div>
             <p class="footer-description">
               Experience the next generation of video streaming. Fast, secure, and crystal clear. 
               Stream your favorite content with advanced features and premium quality.
             </p>
-            <a href="tg://resolve?domain=ZoroStreamBot" class="footer-cta">
+            {% if bot_link %}
+            <a href="{{bot_link}}" class="footer-cta" target="_blank">
               <i class="fas fa-rocket"></i>
               Get Started Free
             </a>
-            <div class="social-links">
-              <a href="https://github.com/TechifyBots" class="social-link" title="GitHub" target="_blank">
-                <i class="fa-brands fa-github"></i>
-              </a>
-              <a href="https://x.com/ImRahulDhankhar" class="social-link" title="Twitter">
-                <i class="fa-brands fa-twitter"></i>
-              </a>
-              <a href="https://youtube.com/@techifybots" class="social-link" title="YouTube">
-                <i class="fa-brands fa-youtube"></i>
-              </a>
-              <a href="https://www.instagram.com/ImRahulDhankhar" class="social-link" title="Instagram">
-                <i class="fa-brands fa-instagram"></i>
-              </a>
-            </div>
+            {% endif %}
           </div>
 
           <div>
             <div class="footer-section-title">About</div>
             <div style="color: var(--text-secondary); font-size: 13px; line-height: 1.7;">
-              Techify Bots is a modern video streaming platform built with cutting-edge technology. 
+              {{brand_name}} is a modern video streaming platform built for a smooth viewing experience. 
               We provide fast, secure, and high-quality streaming services.
             </div>
           </div>
@@ -1904,13 +1996,10 @@
         <div class="footer-bottom">
           <div class="copyright-container">
             <div class="footer-copyright">
-              © 2026 Made with <i class="fas fa-heart"></i> by <a href="https://TechifyBots.vercel.app" target="_blank">Rahul</a>
+              © 2026 {{brand_name}}{% if owner_name %} · Made with <i class="fas fa-heart"></i> by {% if owner_url %}<a href="{{owner_url}}" target="_blank">{{owner_name}}</a>{% else %}{{owner_name}}{% endif %}{% endif %}
             </div>
             <div class="footer-bottom-links">
-              <a href="https://graph.org/Techify-Bots-03-03-6" target="_blank">Privacy Policy</a>
-              <a href="https://graph.org/Techify-Bots-03-03-12" target="_blank">Terms of Service</a>
-              <a href="https://techifybots.github.io/PayWeb" target="_blank">Support</a>
-              <a href="https://github.com/TechifyBots/Auto-Filter-Bot" target="_blank">Source Code</a>
+              {% if support_url %}<a href="{{support_url}}" target="_blank">Support</a>{% endif %}
             </div>
             <div class="dev-credit">
               <i class="fas fa-code"></i>
@@ -2326,9 +2415,11 @@
     }
 
     function reportIssue() {
+      const supportUrl = '{{support_url}}';
+      if (!supportUrl) { showToast('Info', 'Please contact the admin to report this issue.'); return; }
       showToast('Info', 'Opening report form...');
       setTimeout(() => {
-        window.open('https://telegram.me/CallOwnerBot', '_blank');
+        window.open(supportUrl, '_blank');
       }, 500);
     }
 
