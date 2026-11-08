@@ -430,3 +430,16 @@ sʜᴏᴡɴ ɪɴ : {remaining_seconds} <i>sᴇᴄ</i>⚡️
 • /nofsub - ʀᴇᴍᴏᴠᴇ ᴄᴜꜱᴛᴏᴍ ꜰᴏʀᴄᴇ ꜱᴜʙ ᴄʜᴀɴɴᴇʟ.
 • /details - ᴄʜᴇᴄᴋ ʏᴏᴜʀ ꜱᴇᴛᴛɪɴɢꜱ.
 • /settings - ᴄʜᴀɴɢᴇ ᴛʜᴇ ɢʀᴏᴜᴘ ꜱᴇᴛᴛɪɴɢꜱ ᴀꜱ ʏᴏᴜʀ ᴡɪꜱʜ."""
+
+
+# ---- optional UI tweaks (set via environment; defaults leave every text unchanged) ----
+# UI_PLAIN=true   -> small-caps / fancy letters become normal letters (renders on every phone)
+# UI_LANG=hinglish -> the most common messages are shown in Hinglish
+import os as _os
+from core.text_style import apply_to_class as _apply_ui
+from core.hinglish import HINGLISH as _HINGLISH
+_apply_ui(
+    script,
+    _HINGLISH if _os.environ.get("UI_LANG", "en").lower() == "hinglish" else None,
+    _os.environ.get("UI_PLAIN", "false").strip().lower() in ("1", "true", "yes", "y", "enable"),
+)

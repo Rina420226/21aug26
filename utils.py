@@ -1,5 +1,6 @@
 import re
 import os
+import time
 import logging
 from info import *
 from imdbkit import IMDBKit 
@@ -15,6 +16,7 @@ from typing import List
 from database.users_chats_db import db
 import requests
 from shortzy import Shortzy
+from core.ttl_cache import TTLDict
 from plugins.poster import get_movie_detailsx
 
 logger = logging.getLogger(__name__)
@@ -42,13 +44,16 @@ class temp(object):
     U_NAME = None
     B_NAME = None
     B_LINK = None
-    SETTINGS = {}
-    GETALL = {}
-    SHORT = {}
-    IMDB_CAP = {}
-    VERIFICATIONS = {}
-    TEMP_INVITE_LINKS = {}
-    REQ_LINKS = {}
+    START_TIME = time.time()
+    SEARCH_INDEX_READY = False
+    # Bounded caches (entries expire; oldest dropped when full) - these used to grow forever.
+    SETTINGS = TTLDict(ttl=600, maxsize=5000)
+    GETALL = TTLDict(ttl=3600, maxsize=3000)
+    SHORT = TTLDict(ttl=3600, maxsize=5000)
+    IMDB_CAP = TTLDict(ttl=3600, maxsize=5000)
+    VERIFICATIONS = TTLDict(ttl=86400, maxsize=20000)
+    TEMP_INVITE_LINKS = TTLDict(ttl=3600, maxsize=2000)
+    REQ_LINKS = TTLDict(ttl=3600, maxsize=500)
 
 def last_online(user):
     if user.is_bot:
@@ -160,7 +165,7 @@ async def is_check_admin(bot, chat_id, user_id):
     try:
         member = await bot.get_chat_member(chat_id, user_id)
         return member.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]
-    except:
+    except Exception:
         return False
     
 async def users_broadcast(user_id, message, is_pin):
@@ -170,8 +175,8 @@ async def users_broadcast(user_id, message, is_pin):
             await m.pin(both_sides=True)
         return True, "Success"
     except FloodWait as e:
-        await asyncio.sleep(e.x)
-        return await users_broadcast(user_id, message)
+        await asyncio.sleep(e.value)
+        return await users_broadcast(user_id, message, is_pin)
     except InputUserDeactivated:
         await db.delete_user(int(user_id))
         logging.info(f"{user_id}-Removed from Database, since deleted account.")
@@ -185,6 +190,7 @@ async def users_broadcast(user_id, message, is_pin):
         logging.info(f"{user_id} - PeerIdInvalid")
         return False, "Error"
     except Exception as e:
+        logging.warning("broadcast to %s failed: %r", user_id, e)
         return False, "Error"
 
 async def groups_broadcast(chat_id, message, is_pin):
@@ -193,12 +199,12 @@ async def groups_broadcast(chat_id, message, is_pin):
         if is_pin:
             try:
                 await m.pin()
-            except:
-                pass
+            except Exception as _ignored:
+                logging.getLogger(__name__).debug("Ignored error: %r", _ignored)
         return "Success"
     except FloodWait as e:
-        await asyncio.sleep(e.x)
-        return await groups_broadcast(chat_id, message)
+        await asyncio.sleep(e.value)
+        return await groups_broadcast(chat_id, message, is_pin)
     except Exception as e:
         await db.delete_chat(chat_id)
         return "Error"

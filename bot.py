@@ -1,19 +1,23 @@
+import os
 import sys
 import time
 import traceback
 from datetime import datetime
 import asyncio
 from asyncio import sleep
-from pyrogram import idle, __version__
+from pyrogram import idle, __version__, enums
 from pyrogram.raw.all import layer
 from pyrogram.errors import FloodWait
 from pytz import timezone
 from pathlib import Path
 import importlib.util
+import aiohttp
 from aiohttp import web
 from PIL import Image
 Image.MAX_IMAGE_PIXELS = 500_000_000
-from database.ia_filterdb import Media, Media2
+from database.ia_filterdb import Media, Media2, ensure_search_index
+from database import jobs_db
+from core import alerts
 from database.users_chats_db import db
 from info import *
 from utils import temp
@@ -27,7 +31,7 @@ import logging.config
 
 logging.basicConfig(level=logging.INFO)
 logging.config.fileConfig('logging.conf')
-logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().setLevel(os.environ.get("LOG_LEVEL", "INFO").upper())
 logging.getLogger("pyrogram").setLevel(logging.ERROR)
 logging.getLogger("imdbpy").setLevel(logging.ERROR)
 logging.getLogger("aiohttp").setLevel(logging.ERROR)
@@ -151,21 +155,34 @@ async def techifybots_start():
     temp.B_LINK = me.mention
     techifybots.username = '@' + me.username
     techifybots.loop.create_task(check_expired_premium(techifybots))
+    techifybots.loop.create_task(ensure_search_index())   # backfills the search index in the background
     logging.info(f"{me.first_name} with Pyrogram v{__version__} (Layer {layer}) started on {me.username}.")
     logging.info(LOG_STR)
     logging.info(script.LOGO)
     now = datetime.now(timezone("Asia/Kolkata"))
     await techifybots.send_message(chat_id=LOG_CHANNEL, text=f"**{temp.B_LINK} is restarted!**\n\n📅 Date : `{now.strftime('%d %B, %Y')}`\n⏰ Time : `{now.strftime('%I:%M:%S %p')}`\n🌐 Timezone : `Asia/Kolkata`")
+    if ERROR_ALERTS:
+        async def _send_alert(text):
+            await techifybots.send_message(LOG_CHANNEL, text, parse_mode=enums.ParseMode.HTML)
+        alerts.install(_send_alert, asyncio.get_running_loop())
+    try:
+        unfinished = await jobs_db.list_unfinished()
+    except Exception:
+        unfinished = []
+    restart_note = f"🤖 {temp.B_NAME} Restarted Successfully ✅"
+    if unfinished:
+        restart_note += f"\n\n⚠️ {len(unfinished)} unfinished job(s) (indexing/broadcast). Send /resume_jobs to continue."
     for admin_id in ADMINS:
         try:
-            await techifybots.send_message(chat_id=int(admin_id), text=f"🤖 {temp.B_NAME} Restarted Successfully ✅")
+            await techifybots.send_message(chat_id=int(admin_id), text=restart_note)
         except Exception as e:
             logging.warning(f"Couldn't send restart message to admin {admin_id}: {e}")
     app = web.AppRunner(await web_server())
     await app.setup()
     bind_address = "0.0.0.0"
     await web.TCPSite(app, bind_address, PORT).start()
-    techifybots.loop.create_task(keep_alive())
+    if FQDN_CONFIGURED and not ON_HEROKU:
+        techifybots.loop.create_task(keep_alive())
     await idle()
     
 if __name__ == '__main__':

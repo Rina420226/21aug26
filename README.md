@@ -189,3 +189,8 @@ Use at your own discretion and **always respect platform rules and copyrights**.
 ## 📌 Note
 
 𝘊𝘰𝘱𝘺𝘪𝘯𝘨 𝘰𝘳 𝘚𝘦𝘭𝘭𝘪𝘯𝘨 𝘵𝘩𝘪𝘴 𝘳𝘦𝘱𝘰 𝘪𝘴 𝘴𝘵𝘳𝘪𝘤𝘵𝘭𝘺 𝘱𝘳𝘰𝘩𝘪𝘣𝘪𝘵𝘦𝘥.
+
+---
+
+## 🆕 Upgrades
+See [UPGRADES.md](UPGRADES.md) for the new environment variables, commands and how to enable each feature.
