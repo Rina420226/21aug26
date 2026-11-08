@@ -26,6 +26,7 @@ class Database:
         self.misc = self.db.misc
         self.verify_id = self.db.verify_id 
         self.codes = self.db.codes
+        self.payments = self.db.payments
         self.filename_col = self.db.filename
         self.movie_updates = self.db.movie_updates
         self.connection = self.db.connections
@@ -346,6 +347,18 @@ class Database:
         return await self.update_one(
             {"id": user_id}, {"$set": {"expiry_time": None}}
         )
+
+    async def claim_payment(self, payment_id, user_id, days, amount):
+        """True the first time a payment id is seen (idempotency for webhook retries)."""
+        try:
+            await self.payments.insert_one({"_id": payment_id, "user_id": user_id, "days": days, "amount": amount,
+                                            "at": datetime.datetime.utcnow()})
+            return True
+        except DuplicateKeyError:
+            return False
+
+    async def release_payment(self, payment_id):
+        await self.payments.delete_one({"_id": payment_id})
 
     async def check_trial_status(self, user_id):
         user_data = await self.get_user(user_id)

@@ -10,14 +10,22 @@ from pymongo.errors import DuplicateKeyError
 from umongo import Instance, Document, fields
 from motor.motor_asyncio import AsyncIOMotorClient
 from info import *
-from utils import get_settings, save_group_settings
+from utils import get_settings, save_group_settings, temp
 from datetime import datetime, timedelta
 from functools import lru_cache
-from fuzzywuzzy import fuzz
+import time
+from pymongo import UpdateOne
+from core import fuzzy
+from core.search_tokens import make_tokens, build_token_filter
+from core.ttl_cache import TTLDict
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 # ---------------------------------------------------------
+
+# Caches: "total results" per query (avoids a COUNT on every page) and fuzzy suggestions per query
+_count_cache = TTLDict(ttl=COUNT_CACHE_TTL, maxsize=2000)
+_fuzzy_cache = TTLDict(ttl=600, maxsize=2000)
 
 # Global cache for DB size
 _db_stats_cache = {"timestamp": None, "primary_size": 0.0}
@@ -47,9 +55,11 @@ class Media(Document):
     mime_type = fields.StrField(allow_none=True)
     caption = fields.StrField(allow_none=True)
     cover = fields.StrField(allow_none=True)
+    unique_id = fields.StrField(allow_none=True)                    # Telegram file_unique_id (duplicate detection)
+    tokens = fields.ListField(fields.StrField(), allow_none=True)   # lower-case words of file_name (indexed search)
 
     class Meta:
-        indexes = ("$file_name",)
+        indexes = ("$file_name", "unique_id", "tokens")
         collection_name = COLLECTION_NAME
 
 
@@ -63,9 +73,11 @@ class Media2(Document):
     mime_type = fields.StrField(allow_none=True)
     caption = fields.StrField(allow_none=True)
     cover = fields.StrField(allow_none=True)
+    unique_id = fields.StrField(allow_none=True)                    # Telegram file_unique_id (duplicate detection)
+    tokens = fields.ListField(fields.StrField(), allow_none=True)   # lower-case words of file_name (indexed search)
 
     class Meta:
-        indexes = ("$file_name",)
+        indexes = ("$file_name", "unique_id", "tokens")
         collection_name = COLLECTION_NAME
 
 async def check_db_size(db):
@@ -96,6 +108,13 @@ async def save_file(media):
         r"[_\-\.#+$%^&*()!~`,;:\"'?/<>\[\]{}=|\\]", " ", str(media.file_name)
     )
     file_name = re.sub(r"\s+", " ", file_name).strip()
+    unique_id = getattr(media, "file_unique_id", None)
+    if await is_taken_down(file_name):
+        logger.info(f"[BLOCKED] '{file_name}' matches a takedown entry.")
+        return False, 4
+    if DEDUPE_ON_SAVE and unique_id and await _unique_id_exists(unique_id):
+        logger.info(f"[SKIP] '{file_name}' duplicate (same file_unique_id).")
+        return False, 0
     saveMedia = Media
     target_db = "Primary"
     if MULTIPLE_DB:
@@ -124,6 +143,8 @@ async def save_file(media):
             mime_type=media.mime_type,
             caption=(media.caption.html if media.caption and INDEX_CAPTION else None),
             cover=cover_to_use if COVER else None,
+            unique_id=unique_id,
+            tokens=make_tokens(file_name),
         )
     except Exception as e:
         logger.exception(f"[ERROR] '{file_name}' → {e}")
@@ -163,19 +184,25 @@ async def get_search_results(chat_id, query, file_type=None, max_results=None, o
         query = query.strip()
         if not query:
             return [], None, 0
-        if " " in query:
-            words = [re.escape(w) for w in query.split() if w]
-            raw_pattern = (r".*[\s\.\+\-_]".join(words) if words else r".")
-        else:
-            raw_pattern = (r"(\b|[\.\+\-_])" + re.escape(query) + r"(\b|[\.\+\-_])" )
-        try:
-            regex = compile_regex(raw_pattern)
-        except re.error:
-            return [], None, 0
-        if USE_CAPTION_FILTER:
-            filter_mongo = { "$or": [{"file_name": regex}, {"caption": regex},]}
-        else:
-            filter_mongo = {"file_name": regex}
+        token_filter = None
+        if INDEXED_SEARCH and temp.SEARCH_INDEX_READY and not USE_CAPTION_FILTER:
+            token_filter = build_token_filter(query)      # uses the multikey index on `tokens`
+        if token_filter is not None:
+            filter_mongo = token_filter
+        else:                                             # legacy regex scan (before backfill / caption search)
+            if " " in query:
+                words = [re.escape(w) for w in query.split() if w]
+                raw_pattern = (r".*[\s\.\+\-_]".join(words) if words else r".")
+            else:
+                raw_pattern = (r"(\b|[\.\+\-_])" + re.escape(query) + r"(\b|[\.\+\-_])" )
+            try:
+                regex = compile_regex(raw_pattern)
+            except re.error:
+                return [], None, 0
+            if USE_CAPTION_FILTER:
+                filter_mongo = { "$or": [{"file_name": regex}, {"caption": regex},]}
+            else:
+                filter_mongo = {"file_name": regex}
 
     if file_type:
         filter_mongo["file_type"] = file_type
@@ -196,17 +223,23 @@ async def get_search_results(chat_id, query, file_type=None, max_results=None, o
         next_offset = offset + len(files) if has_next_page else ""
         total_results = offset + len(files) + (1 if has_next_page else 0)
     else:
-        count_tasks = [Media.count_documents(filter_mongo)]
         find_tasks = [Media.find(filter_mongo).sort("$natural", -1).skip(offset).limit(max_results).to_list(length=max_results)]
-
         if MULTIPLE_DB:
-            count_tasks.append(Media2.count_documents(filter_mongo))
             find_tasks.append(Media2.find(filter_mongo).sort("$natural", -1).skip(offset).limit(max_results).to_list(length=max_results))
-        count_results, find_results = await asyncio.gather(
-            asyncio.gather(*count_tasks),
-            asyncio.gather(*find_tasks)
-        )
-        total_results = sum(count_results)
+        ckey = f"{MULTIPLE_DB}|{filter_mongo!r}"
+        total_results = _count_cache.get(ckey)
+        if total_results is None:                         # only COUNT when we have no recent total
+            count_tasks = [Media.count_documents(filter_mongo)]
+            if MULTIPLE_DB:
+                count_tasks.append(Media2.count_documents(filter_mongo))
+            count_results, find_results = await asyncio.gather(
+                asyncio.gather(*count_tasks),
+                asyncio.gather(*find_tasks)
+            )
+            total_results = sum(count_results)
+            _count_cache[ckey] = total_results
+        else:
+            find_results = await asyncio.gather(*find_tasks)
         files = find_results[0]
         if MULTIPLE_DB and len(find_results) > 1:
             files.extend(find_results[1])
@@ -434,7 +467,7 @@ def fuzzy_clean_title(file_name: str) -> str:
 def _score_titles(query: str, items, min_score: int):
     scored = []
     for key, title in items:
-        score = max(fuzz.token_sort_ratio(query, key), fuzz.ratio(query, key))
+        score = max(fuzzy.token_sort_ratio(query, key), fuzzy.ratio(query, key))
         if score >= min_score:
             scored.append((score, title))
     scored.sort(key=lambda x: (-x[0], len(x[1])))
@@ -449,6 +482,10 @@ async def get_fuzzy_suggestions(query: str, limit: int = None, min_score: int = 
     q = re.sub(r"\s+", " ", q).strip()
     if len(q) < 3:
         return []
+    cache_key = (q, limit, min_score, file_type)
+    cached = _fuzzy_cache.get(cache_key)
+    if cached is not None:
+        return list(cached)
     tokens = [t for t in q.split() if len(t) >= 3 and t not in _FUZZY_STOP] or [q]
     frags = set()
     for t in tokens:
@@ -476,4 +513,147 @@ async def get_fuzzy_suggestions(query: str, limit: int = None, min_score: int = 
     if not titles:
         return []
     scored = await asyncio.to_thread(_score_titles, q, list(titles.items()), min_score)
-    return [title for _, title in scored[:limit]]
+    result = [title for _, title in scored[:limit]]
+    _fuzzy_cache[cache_key] = result
+    return result
+
+
+
+# ---------------------------------------------------------
+# Search index backfill (tokens) - search keeps using the old regex path until this finishes
+# ---------------------------------------------------------
+async def _backfill_tokens(model, batch=1000):
+    col = model.collection
+    done = 0
+    while True:
+        docs = await col.find({"tokens": {"$exists": False}}, {"file_name": 1}).limit(batch).to_list(length=batch)
+        if not docs:
+            return done
+        ops = [UpdateOne({"_id": d["_id"]}, {"$set": {"tokens": make_tokens(d.get("file_name", ""))}}) for d in docs]
+        await col.bulk_write(ops, ordered=False)
+        done += len(docs)
+        await asyncio.sleep(0)
+
+
+async def ensure_search_index():
+    """Make sure every file has `tokens`, then switch search to the indexed path."""
+    if not INDEXED_SEARCH:
+        logger.info("INDEXED_SEARCH disabled - using regex search.")
+        return
+    models = [Media] + ([Media2] if MULTIPLE_DB else [])
+    try:
+        pending = 0
+        for m in models:
+            pending += await m.collection.count_documents({"tokens": {"$exists": False}}, limit=1)
+        if pending:
+            logger.warning("Search index backfill started (search stays on the old path until it finishes).")
+            total = 0
+            for m in models:
+                total += await _backfill_tokens(m)
+            logger.warning(f"Search index backfill done: {total} files.")
+        temp.SEARCH_INDEX_READY = True
+        logger.info("Indexed search is ON.")
+    except Exception:
+        logger.exception("Search index backfill failed - staying on regex search.")
+
+
+# ---------------------------------------------------------
+# Duplicates
+# ---------------------------------------------------------
+async def _unique_id_exists(unique_id):
+    models = [Media] + ([Media2] if MULTIPLE_DB else [])
+    for m in models:
+        if await m.collection.find_one({"unique_id": unique_id}, {"_id": 1}):
+            return True
+    return False
+
+
+async def remove_duplicate_files(dry_run=True, limit_groups=5000):
+    """Find files with identical (file_name, file_size). Keeps the first, deletes the rest unless dry_run.
+    Returns (groups, extra_files_found, deleted)."""
+    groups = extra = deleted = 0
+    models = [Media] + ([Media2] if MULTIPLE_DB else [])
+    pipeline = [
+        {"$group": {"_id": {"n": "$file_name", "s": "$file_size"}, "ids": {"$push": "$_id"}, "c": {"$sum": 1}}},
+        {"$match": {"c": {"$gt": 1}}},
+        {"$limit": limit_groups},
+    ]
+    for m in models:
+        col = m.collection
+        async for g in col.aggregate(pipeline, allowDiskUse=True):
+            groups += 1
+            drop = g["ids"][1:]
+            extra += len(drop)
+            if not dry_run and drop:
+                res = await col.delete_many({"_id": {"$in": drop}})
+                deleted += res.deleted_count
+    return groups, extra, deleted
+
+
+# ---------------------------------------------------------
+# Takedown (DMCA) list - matching files are deleted and can never be re-indexed
+# ---------------------------------------------------------
+_takedowns = {"at": 0.0, "entries": []}
+
+
+async def _load_takedowns(force=False):
+    if not force and time.time() - _takedowns["at"] < 300:
+        return _takedowns["entries"]
+    try:
+        entries = [(str(e["_id"]), set(e.get("tokens", [])), e.get("query", "")) async for e in db.takedowns.find({})]
+        _takedowns.update(at=time.time(), entries=entries)
+    except Exception:
+        logger.exception("Could not load takedown list")
+    return _takedowns["entries"]
+
+
+async def is_taken_down(file_name):
+    entries = await _load_takedowns()
+    if not entries:
+        return False
+    toks = set(make_tokens(file_name))
+    return any(t and t.issubset(toks) for _, t, _ in entries)
+
+
+def _takedown_filter(words):
+    if temp.SEARCH_INDEX_READY:
+        return {"tokens": {"$all": words}}
+    return {"file_name": re.compile("".join(f"(?=.*\\b{re.escape(w)}\\b)" for w in words), re.IGNORECASE)}
+
+
+async def count_takedown_matches(query):
+    words = make_tokens(query)
+    if not words:
+        return 0
+    flt = _takedown_filter(words)
+    models = [Media] + ([Media2] if MULTIPLE_DB else [])
+    return sum([await m.collection.count_documents(flt) for m in models])
+
+
+async def add_takedown(query, by_user):
+    """Blacklist `query`, delete matching files now. Returns (entry_id, deleted_count)."""
+    words = make_tokens(query)
+    if not words:
+        return None, 0
+    res = await db.takedowns.insert_one({"query": query, "tokens": words, "by": by_user, "at": datetime.utcnow()})
+    flt = _takedown_filter(words)
+    deleted = 0
+    for m in [Media] + ([Media2] if MULTIPLE_DB else []):
+        deleted += (await m.collection.delete_many(flt)).deleted_count
+    await _load_takedowns(force=True)
+    _count_cache.clear()
+    return str(res.inserted_id), deleted
+
+
+async def list_takedowns():
+    return [(str(e["_id"]), e.get("query", "")) async for e in db.takedowns.find({}).sort("at", -1).limit(50)]
+
+
+async def remove_takedown(entry_id):
+    from bson import ObjectId
+    try:
+        r = await db.takedowns.delete_one({"_id": ObjectId(entry_id)})
+    except Exception:
+        return False
+    await _load_takedowns(force=True)
+    return r.deleted_count == 1
