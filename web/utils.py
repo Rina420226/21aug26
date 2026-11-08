@@ -8,7 +8,8 @@ from typing import Any, Optional
 from pyrogram.types import Message
 from pyrogram.file_id import FileId
 from pyrogram.raw.types.messages import Messages
-from .exceptions import FIleNotFound
+from .exceptions import FIleNotFound, InvalidHash
+from core import signed_links
 from . import techifybots
 
 async def parse_file_id(message: "Message") -> Optional[FileId]:
@@ -54,6 +55,23 @@ def get_hash(media_msg: Message) -> str:
     media = get_media_from_message(media_msg)
     return getattr(media, "file_unique_id", "")[:6]
 
+_SIGN_SECRET = signed_links.derive_secret(STREAM_SECRET, BOT_TOKEN)
+
+def make_query(msg_id, file_hash: str) -> str:
+    """Query string for a stream/download link: hash (+ expiry + HMAC signature when STREAM_SIGNED)."""
+    if not STREAM_SIGNED:
+        return f"hash={file_hash}"
+    exp, sig = signed_links.sign(_SIGN_SECRET, msg_id, file_hash, STREAM_LINK_TTL)
+    return f"hash={file_hash}&exp={exp}&sig={sig}"
+
+def link_query(media_msg: Message) -> str:
+    return make_query(media_msg.id, get_hash(media_msg))
+
+def check_signature(msg_id, file_hash, exp, sig):
+    """Reject forged / expired links *before* any Telegram request is made."""
+    if STREAM_SIGNED and not signed_links.verify(_SIGN_SECRET, msg_id, file_hash, exp, sig):
+        raise InvalidHash
+
 def get_name(media_msg: Message) -> str:
     media = get_media_from_message(media_msg)
     return getattr(media, 'file_name', "")
@@ -73,7 +91,8 @@ def humanbytes(size):
         n += 1
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
 
-async def render_page(id, secure_hash, src=None):
+async def render_page(id, secure_hash, exp=None, sig=None, src=None):
+    check_signature(id, secure_hash, exp, sig)
     file = await techifybots.get_messages(int(BIN_CHANNEL), int(id))
     file_data = await get_file_ids(techifybots, int(BIN_CHANNEL), int(id))
     if file_data.unique_id[:6] != secure_hash:
@@ -83,7 +102,7 @@ async def render_page(id, secure_hash, src=None):
 
     src = urllib.parse.urljoin(
         URL,
-        f"{id}/{urllib.parse.quote_plus(file_data.file_name)}?hash={secure_hash}",
+        f"{id}/{urllib.parse.quote_plus(file_data.file_name)}?{make_query(id, secure_hash)}",
     )
     tag = file_data.mime_type.split("/")[0].strip()
     file_size = humanbytes(file_data.file_size)
