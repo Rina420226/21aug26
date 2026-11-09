@@ -5,7 +5,7 @@
   <meta property="og:image" content="https://i.ibb.co/M8S0Zzj/live-streaming.png" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Techify Bots</title>
+  <title>Video Player</title>
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -886,8 +886,6 @@
     .btn-whatsapp { background: #25D366; color: white; }
     .btn-telegram { background: #0088cc; color: white; }
     .btn-facebook { background: #1877f2; color: white; }
-    .btn-twitter { background: #1DA1F2; color: white; }
-    .btn-instagram { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); color: white; }
     .btn-messenger { background: #0084ff; color: white; }
     .btn-email { background: #ea4335; color: white; }
 
@@ -1737,6 +1735,14 @@
                 <i class="fas fa-flag"></i>
                 <span>Report</span>
               </button>
+              <button class="action-btn" onclick="openExternalPlayer('vlc')">
+                <i class="fas fa-play-circle"></i>
+                <span>Open with VLC</span>
+              </button>
+              <button class="action-btn" onclick="openExternalPlayer('mx')">
+                <i class="fas fa-play-circle"></i>
+                <span>Open with MX Player</span>
+              </button>
             </div>
 
             <div class="share-section">
@@ -1762,14 +1768,6 @@
                 <a class="share-btn btn-facebook" id="facebook-share" target="_blank">
                   <i class="fab fa-facebook-f"></i>
                   <span>Facebook</span>
-                </a>
-                <a class="share-btn btn-twitter" id="twitter-share" target="_blank">
-                  <i class="fab fa-twitter"></i>
-                  <span>Twitter</span>
-                </a>
-                <a class="share-btn btn-instagram" onclick="shareToInstagram()">
-                  <i class="fab fa-instagram"></i>
-                  <span>Instagram</span>
                 </a>
                 <a class="share-btn btn-messenger" id="messenger-share" target="_blank">
                   <i class="fab fa-facebook-messenger"></i>
@@ -1864,34 +1862,11 @@
     <!-- Enhanced Footer -->
     <footer>
       <div class="footer-content">
-        <div class="footer-grid">
-          <div class="footer-brand">
-            <div class="footer-logo">Tudubotz</div>
-            <p class="footer-description">
-              Experience the next generation of video streaming. Fast, secure, and crystal clear. 
-              Stream your favorite content with advanced features and premium quality.
-            </p>
-            <a href="tg://resolve?domain=ZoroStreamBot" class="footer-cta">
-              <i class="fas fa-rocket"></i>
-              
-          <div>
-            <div class="footer-section-title">About</div>
-            <div style="color: var(--text-secondary); font-size: 13px; line-height: 1.7;">
-              Techify Bots is a modern video streaming platform built with cutting-edge technology. 
-              We provide fast, secure, and high-quality streaming services.
-            </div>
-          </div>
-        </div>
-
         <!-- Enhanced Copyright Section -->
         <div class="footer-bottom">
           <div class="copyright-container">
             <div class="footer-copyright">
-              © 2026 Made with <i class="fas fa-heart"></i> by <a href="https://t.me/Tudubotz" target="_blank">Sanat Tudu</a>
-            </div>
-            <div class="dev-credit">
-              <i class="fas fa-code"></i>
-              Developer Edition
+              © 2026 Made with <i class="fas fa-heart"></i> by <a href="https://TechifyBots.vercel.app" target="_blank">Rahul</a>
             </div>
           </div>
         </div>
@@ -2250,14 +2225,12 @@
       const whatsapp = document.getElementById('whatsapp-share');
       const telegram = document.getElementById('telegram-share');
       const facebook = document.getElementById('facebook-share');
-      const twitter = document.getElementById('twitter-share');
       const messenger = document.getElementById('messenger-share');
       const email = document.getElementById('email-share');
 
       if (whatsapp) whatsapp.href = `https://wa.me/?text=${title}%20${currentUrl}`;
       if (telegram) telegram.href = `https://t.me/share/url?url=${currentUrl}&text=${title}`;
       if (facebook) facebook.href = `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`;
-      if (twitter) twitter.href = `https://twitter.com/intent/tweet?url=${currentUrl}&text=${title}`;
       if (messenger) messenger.href = `fb-messenger://share/?link=${currentUrl}`;
       if (email) email.href = `mailto:?subject=${title}&body=Check out this video: ${currentUrl}`;
     }
@@ -2277,11 +2250,6 @@
       });
     }
 
-    function shareToInstagram() {
-      showToast('Info', 'Instagram sharing works best through the app. Link copied!');
-      copyLink();
-    }
-
     function shareVideo() {
       if (navigator.share) {
         navigator.share({
@@ -2290,6 +2258,39 @@
         }).catch(() => {});
       } else {
         copyLink();
+      }
+    }
+
+    function openExternalPlayer(player) {
+      const video = document.querySelector('.player');
+      const rawUrl = video ? (video.currentSrc || video.src) : '';
+      if (!rawUrl) {
+        showToast('Error', 'Video URL is not available', 'error');
+        return;
+      }
+
+      let url;
+      try { url = new URL(rawUrl, window.location.href); }
+      catch (_) {
+        showToast('Error', 'Invalid video URL', 'error');
+        return;
+      }
+
+      const packageName = player === 'vlc'
+        ? 'org.videolan.vlc'
+        : 'com.mxtech.videoplayer.ad';
+      const appName = player === 'vlc' ? 'VLC Player' : 'MX Player';
+
+      // Android Chrome intent URL launches the selected app when installed.
+      if (/Android/i.test(navigator.userAgent)) {
+        const fallback = encodeURIComponent(url.href);
+        const intent = `intent://${url.host}${url.pathname}${url.search}${url.hash}` +
+          `#Intent;scheme=${url.protocol.replace(':', '')};type=video/*;` +
+          `package=${packageName};S.browser_fallback_url=${fallback};end`;
+        window.location.href = intent;
+      } else {
+        showToast('Info', `${appName} is available on Android. Opening browser stream instead.`);
+        window.open(url.href, '_blank', 'noopener');
       }
     }
 
